@@ -3,7 +3,7 @@
 /* PREVIEW build: own cache prefix so it never deletes or reuses the live site's caches
    (live and preview share the same github.io origin). */
 const CACHE_PREFIX = 'nppl-preview-';
-const CACHE_VERSION = CACHE_PREFIX + 'v4-20261030-splash';
+const CACHE_VERSION = CACHE_PREFIX + 'v5-20261030-extvisuals';
 const SHELL = [
   './',
   './index.html',
@@ -22,6 +22,15 @@ const SHELL = [
   './assets/img/c42/ext-elec.svg',
   './assets/img/c42/ext-prop.svg',
   './assets/img/c42/ext-fuel.svg',
+  './assets/img/c42/ext-oil.svg',
+  './assets/img/c42/ext-nose.svg',
+  './assets/img/c42/ext-doors.svg',
+  './assets/img/c42/ext-wings.svg',
+  './assets/img/c42/ext-ail.svg',
+  './assets/img/c42/ext-bag.svg',
+  './assets/img/c42/ext-fuse.svg',
+  './assets/img/c42/ext-hs.svg',
+  './assets/img/c42/ext-elev.svg',
   './assets/img/c42/dep-power.svg',
   './assets/video/circuit-poster.jpg',
   './data/lessons.js',

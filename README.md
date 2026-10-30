@@ -14,6 +14,7 @@
 - **Airfields:** 10 → 29 quick cards for south England and South Wales. Each card names its source (UK AIP AIRAC 29 Oct 2026 or the airfield's website). Blanks mean "not verified". **Always check the current AIP/website and get PPR.**
 - **C42 checks:** the app's own checklist design (no photos or school branding); Useful Frequencies omitted.
 - **C42 visual aids (30 Oct):** original animated illustrations ("typical" set-up) for Electrical System, Propeller, Fuel (good vs water vs debris sample) and Power Check. The current step shows the visual full width; other rows with art have a tap-to-expand thumbnail. Reduced-motion users get a still. Rows without art are unchanged.
+- **More C42 external-check visuals (30 Oct):** added animated "typical" illustrations for the rest of External checks: Oil Level, Nosewheel, Doors & Undercarriage, Wings, Aileron & Flap, Baggage Compartment, Fuselage, Horizontal Stabiliser and Elevator. They are wired the same way and have reduced-motion stills. SW cache is `v5-20261030-extvisuals`.
 - **Translations:** stale or half-English content was removed (it falls back to English), and the missing UI strings were added in all 7 languages. **All non-English text still needs a check by a native speaker.**
 - **Bug fixes:** the exam timer kept running after you left the exam; the exam answer key was biased; airfield seeds were missing for existing users; the service worker cache was scoped wrongly; translated choices could mismatch the answer key.
 
