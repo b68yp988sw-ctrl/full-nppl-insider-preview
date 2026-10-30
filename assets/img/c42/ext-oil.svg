@@ -21,16 +21,13 @@
   .b2{animation-delay:-.35s}.b3{animation-delay:-.7s}
   .zoom{animation:zoom 4s linear infinite}
   .gl{animation:gl 4s linear infinite}
-  .lvl{animation:lvl 4s ease-out infinite}
-  @keyframes prop{0%{transform:rotate(0)}44%{transform:rotate(-300deg)}50%,100%{transform:rotate(-300deg)}}
+  @keyframes prop{0%{transform:rotate(0)}44%{transform:rotate(-360deg)}50%,100%{transform:rotate(-360deg)}}
   @keyframes pa{0%,2%{opacity:0}6%,46%{opacity:1}50%,100%{opacity:0}}
   @keyframes pb{0%,50%{opacity:0}54%,97%{opacity:1}100%{opacity:0}}
   @keyframes cap{0%,4%{transform:translateY(0)}10%,94%{transform:translateY(-9px)}99%,100%{transform:translateY(0)}}
   @keyframes bub{0%,22%{opacity:0;transform:translateY(0)}26%{opacity:1}36%{opacity:0;transform:translateY(-12px)}100%{opacity:0;transform:translateY(-12px)}}
   @keyframes gl{0%,20%{opacity:0}24%,46%{opacity:1}50%,100%{opacity:0}}
   @keyframes zoom{0%,50%{opacity:.18}55%,97%{opacity:1}100%{opacity:.18}}
-  @keyframes lvl{0%,56%{transform:scaleY(0)}70%,100%{transform:scaleY(1)}}
-  .lvl{transform-origin:150px 132px}
   @media (prefers-reduced-motion:reduce){*{animation:none!important}.pa,.pbt,.bub,.gl{display:none}}
 </style>
 <rect width="240" height="160" rx="12" fill="url(#bg)"/>

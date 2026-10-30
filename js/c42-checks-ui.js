@@ -53,7 +53,7 @@ const C42UI = (() => {
     'ext-bag': { src: 'assets/img/c42/ext-bag.svg', cap: 'Typical left-side baggage cover: read the fuel through the translucent tank, look for leaks, stow loose items, then refit and secure the cover.' },
     'ext-fuse': { src: 'assets/img/c42/ext-fuse.svg', cap: 'Typical: drain under the right seat is dry with its clip on. Check the pod and boom, especially underneath, for cracks or damage.' },
     'ext-hs': { src: 'assets/img/c42/ext-hs.svg', cap: 'Typical strut-braced tailplane: look underneath for damage. Elevator moves full up and down; hinges and fasteners secure.' },
-    'ext-elev': { src: 'assets/img/c42/ext-elev.svg', cap: 'Typical tail: elevator undamaged with full travel, trim tab secure with no play, rudder hinges and cables secure.' },
+    'ext-elev': { src: 'assets/img/c42/ext-elev.svg', cap: 'Typical tail: elevator undamaged with full travel, trim tab and its linkage secure, rudder hinges and cables secure.' },
     'ext-fuel': { src: 'assets/img/c42/ext-fuel.svg', cap: 'Typical samples: good vs water vs debris. Water is heavier and sinks below the fuel.' },
     'dep-p':    { src: 'assets/img/c42/dep-power.svg', cap: 'Typical Rotax 912 tach: brakes on, into wind, set 3500 rpm. Confirm with your POH / instructor.' }
   };

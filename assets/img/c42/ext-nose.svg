@@ -41,7 +41,7 @@
 <g class="ring">
   <ellipse cx="62" cy="96" rx="40" ry="40" fill="none" stroke="#d4af37" stroke-width="1.6" stroke-dasharray="5 4"/>
 </g>
-<g class="ring"><g><rect x="20.0" y="136" width="108.5" height="17" rx="5" fill="#231d0b" stroke="#d4af37"/><text x="74.2" y="147.5" text-anchor="middle" font-size="7" font-weight="700" fill="#e8c96a">Leg, fork &amp; spat secure</text></g></g>
+<g class="ring"><g><rect x="20.0" y="136" width="94.5" height="17" rx="5" fill="#231d0b" stroke="#d4af37"/><text x="67.2" y="147.5" text-anchor="middle" font-size="7" font-weight="700" fill="#e8c96a">Leg, fork &amp; spat secure</text></g></g>
 <!-- tyre creep insets -->
 <g class="ins">
   <text x="178" y="24" text-anchor="middle" font-size="6.4" font-weight="700" letter-spacing=".5" fill="#a6acbb">TYRE: WEAR &amp; CREEP MARK</text>
