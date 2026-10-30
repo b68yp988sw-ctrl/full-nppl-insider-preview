@@ -23,7 +23,7 @@
 
 Mobile-first **UK NPPL Microlight** study aid for Christopher (C42 student-pilot context).
 
-> **Study aid for NPPL. Not affiliated with the CAA or QuizAero. Always check current official syllabus and your instructor.**
+> **Study aid for NPPL. Not affiliated with the CAA. Always check current official syllabus and your instructor.**
 
 ## Subjects (first-class)
 

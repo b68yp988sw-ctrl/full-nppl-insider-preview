@@ -3,7 +3,7 @@
 /* PREVIEW build: own cache prefix so it never deletes or reuses the live site's caches
    (live and preview share the same github.io origin). */
 const CACHE_PREFIX = 'nppl-preview-';
-const CACHE_VERSION = CACHE_PREFIX + 'v6-20261030-extvisuals-qc';
+const CACHE_VERSION = CACHE_PREFIX + 'v7-20261030-no-quizaero';
 const SHELL = [
   './',
   './index.html',
