@@ -7,7 +7,8 @@
 ## What changed in this preview (29 Oct 2026)
 
 - **Simpler layout:** home has 6 big labelled sections (Study · Practice exams · Flying skills · Plan a flight · My log · Settings), a "Continue where you left off" card, a 5-tab bottom bar (Home · Study · Exams · Skills · Plan), clear page titles and a labelled Back button, 48 px tap targets, 17 px base text and higher-contrast muted text. Every earlier screen is still reachable from a hub.
-- **New logo:** home-screen icons (180/192/512 + maskable 512), black theme, and a 1.5 s opening splash (once per session, tap to skip, never blocks the app).
+- **New logo:** home-screen icons (180/192/512 + maskable 512), black theme.
+- **Full-screen opening splash (30 Oct):** on every app open the logo fills the whole screen (tall art for phones, wide art for landscape/desktop; the original logo is untouched in the centre and the web is extended to the edges), shows for about 1.2 s, fades, then goes straight to the sign-in screen (tap Continue). Tap to skip; reduced-motion users get no zoom/fade; a 2.5 s fallback means it can never get stuck. iOS home-screen launch images and the manifest colours match it, so there is no white flash. Returning users see the sign-in screen with the disclaimer already ticked.
 - **Narrated circuit video** (4 min 13 s) on Flying skills → Circuits. It loads only when you tap play and is not saved offline.
 - **Questions:** 352 → 402. The 50 new questions are original (`added: "2026-10-preview"`), and the answer order is now shuffled for each sitting.
 - **Airfields:** 10 → 29 quick cards for south England and South Wales. Each card names its source (UK AIP AIRAC 29 Oct 2026 or the airfield's website). Blanks mean "not verified". **Always check the current AIP/website and get PPR.**
