@@ -3,7 +3,7 @@
 /* PREVIEW build: own cache prefix so it never deletes or reuses the live site's caches
    (live and preview share the same github.io origin). */
 const CACHE_PREFIX = 'nppl-preview-';
-const CACHE_VERSION = CACHE_PREFIX + 'v3-20261030-layoutD';
+const CACHE_VERSION = CACHE_PREFIX + 'v3-20261030-checks';
 const SHELL = [
   './',
   './index.html',
@@ -59,9 +59,7 @@ const SHELL = [
   './js/pwa.js',
   './data/crp-drills.js',
   './data/frtol-drills.js',
-  './data/airfields.js',
-  './assets/c42-checks/sheet-1-preview.jpg',
-  './assets/c42-checks/sheet-2-preview.jpg'
+  './data/airfields.js'
 ];
 
 const LANG_FILES = ['cy', 'pl', 'fr', 'de', 'es', 'pt', 'ro'].map(
