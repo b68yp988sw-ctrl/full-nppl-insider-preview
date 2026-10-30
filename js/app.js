@@ -290,51 +290,211 @@
     </button>`;
   }
 
+  /* ---------- HOME: layout D (carousel + grouped sections) ---------- */
+  const HICO = {
+    chev: '<path d="m9 6 6 6-6 6"/>',
+    play: '<path d="M8 5v14l11-7z" fill="currentColor"/>',
+    theory: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5V5.5"/><path d="M8.5 7.5h6"/>',
+    cards: '<rect x="3" y="7" width="13" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-3"/>',
+    calc: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8.5 11.5h.1M12 11.5h.1M15.5 11.5h.1M8.5 15h.1M12 15h.1M15.5 15h.1M8.5 18h.1M12 18h.1"/>',
+    radio: '<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M8 9l9-5"/><circle cx="9" cy="14.5" r="2"/><path d="M14 13h3M14 16h3"/>',
+    check: '<path d="M10 6h10M10 12h10M10 18h10"/><path d="m3.5 6 1.5 1.5L7.5 5M3.5 12l1.5 1.5 2.5-2.5M3.5 18l1.5 1.5 2.5-2.5"/>',
+    circuit: '<rect x="3.5" y="7" width="17" height="10" rx="5"/><path d="m13 4.5 2.5 2.5-2.5 2.5"/>',
+    land: '<path d="M3 20h18"/><path d="M4 9.5 6 9l3 3 5.5-1.5L18 5l1.6.5-1.8 6.3L7.3 15 4 11.3z"/>',
+    alert: '<path d="M12 3 2.5 20h19z"/><path d="M12 10v4.5M12 17.5v.1"/>',
+    clip: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.8h6V4"/><path d="M8.5 10h7M8.5 14h7M8.5 18h4"/>',
+    map: '<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
+    runway: '<path d="M9 21 10.5 3h3L15 21z"/><path d="M12 6v2M12 11v2M12 16v2"/>',
+    log: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v18"/><path d="M12 8h4M12 12h4"/>',
+    target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
+    gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+    star: '<path d="M12 1 13.7 10.3 23 12 13.7 13.7 12 23 10.3 13.7 1 12 10.3 10.3z"/>'
+  };
+  function hsvg(name, cls) {
+    return `<svg class="i ${cls || ''}" viewBox="0 0 24 24" aria-hidden="true">${HICO[name] || ''}</svg>`;
+  }
+
+  /* Next lesson from real progress: the next unstudied lesson after the one last
+     opened (same subject first), else the first unstudied lesson in course order. */
+  function nextLessonInfo() {
+    const st = Store.load();
+    const done = st.lessonsDone || {};
+    const all = lessons();
+    const a = lastActivity();
+    let pick = null, resume = false;
+    if (a && a.route && a.route.name === 'lesson') {
+      const cur = all.find(l => l.id === a.route.id);
+      if (cur && !done[cur.id]) { pick = cur; resume = true; }
+      else if (cur) {
+        const same = all.filter(l => l.subject === cur.subject);
+        pick = same.slice(same.indexOf(cur) + 1).find(l => !done[l.id]) || null;
+      }
+    } else if (a && a.route && a.route.name === 'subject') {
+      pick = all.find(l => l.subject === a.route.id && !done[l.id]) || null;
+    }
+    if (!pick) pick = all.find(l => !done[l.id]) || null;
+    const subjLessons = pick ? all.filter(l => l.subject === pick.subject) : [];
+    return { lesson: pick, resume, index: pick ? subjLessons.indexOf(pick) + 1 : 0, of: subjLessons.length };
+  }
+
+  /* Today's exam: the subject with the most questions to revise (real weak-area data);
+     with no weak areas it rotates through the subjects by date. */
+  function todaysExam() {
+    const subs = subjects().filter(s => questions().some(q => q.subject === s.id));
+    const by = Store.weakBySubject ? Store.weakBySubject() : {};
+    let best = null, bestN = 0;
+    subs.forEach(s => { const n = (by[s.id] || []).length; if (n > bestN) { best = s; bestN = n; } });
+    if (best) return { id: best.id, weak: bestN, count: questions().filter(q => q.subject === best.id).length };
+    const d = new Date();
+    const day = Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())) / 864e5);
+    const s = subs.length ? subs[day % subs.length] : null;
+    if (!s) return { id: 'mixed', weak: 0, count: questions().length };
+    return { id: s.id, weak: 0, count: questions().filter(q => q.subject === s.id).length };
+  }
+
+  function homeChip(o) {
+    const attr = o.id ? `id="${o.id}"` : `data-go="${o.go}"`;
+    return `<button type="button" class="hd-chip" ${attr}><span class="hd-ico">${hsvg(o.icon)}</span><span class="hd-chip-t">${esc(o.title)}</span></button>`;
+  }
+  function homeGroup(o) {
+    return `<section class="hd-grp" aria-labelledby="hd-h-${o.key}">
+      <div class="hd-gh">
+        <h2 id="hd-h-${o.key}"><span class="hd-gh-ico">${hsvg(o.icon)}</span>${esc(o.title)}</h2>
+        <button type="button" class="hd-all" data-go="${o.go}" aria-label="${esc(o.allLabel)}">${esc(tr('home.see_all', 'See all'))}${hsvg('chev')}</button>
+      </div>
+      <div class="hd-chips">${o.items.map(homeChip).join('')}</div>
+    </section>`;
+  }
+
   function viewHome() {
     setNav('home');
-    titleEl.textContent = t('home.title');
+    titleEl.textContent = 'NPPL INSIDER';
     btnBack.hidden = true;
+    const st = Store.load();
     const prog = Store.progressOverview(subjects(), lessons());
-    const acProf = (typeof AircraftPref !== 'undefined') ? AircraftPref.resolve() : null;
-    const acChip = acProf ? `
-        <div class="ac-selected-chip ac-chip-compact" data-ac-id="${esc(acProf.id)}" role="button" tabindex="0">
-          <div class="ac-thumb">${AircraftPref.thumbForProfile(acProf, 36)}</div>
-          <div class="ac-sel-text">
-            <span class="ac-sel-label">${esc(t('aircraft.flying'))}</span>
-            <span class="ac-sel-name">${esc(AircraftPref.typeName({ id: acProf.id, name: acProf.name }))}</span>
-          </div>
-        </div>` : '';
-    const sections = [
-      { go: 'study', icon: '📘', title: tr('nav.study', 'Study'), meta: tr('home.sec_study_meta', 'Lessons, flashcards, CRP-1, radio') },
-      { go: 'exams', icon: '📝', title: tr('home.exams', 'Practice exams'), meta: tr('home.sec_exams_meta', 'Mock papers & weak areas') },
-      { go: 'skills', icon: '🛩', title: tr('home.sec_skills', 'Flying skills'), meta: tr('home.sec_skills_meta', 'Checks, circuits, landing, emergencies') },
-      { go: 'plan', icon: '🗺️', title: tr('home.sec_plan', 'Plan a flight'), meta: tr('home.sec_plan_meta', 'Flight prep, trip, airfields') },
-      { go: 'log', icon: '📒', title: tr('home.sec_log', 'My log'), meta: tr('home.sec_log_meta', 'Hours & landings') },
-      { go: 'settings', icon: '⚙️', title: tr('common.settings', 'Settings'), meta: tr('home.sec_settings_meta', 'Language, aircraft, backup') }
-    ];
+    const isNew = !prog.doneLessons && !lastActivity() && !prog.known && !prog.exams;
+    const hello = isNew ? tr('home.welcome', 'Welcome') : tr('home.welcome_back', 'Welcome back');
+    const sub = isNew
+      ? tr('home.welcome_new_sub', '{total} theory lessons across {subjects} subjects').replace('{total}', prog.totalLessons).replace('{subjects}', subjects().length)
+      : tr('home.welcome_sub', '{pct}% through the NPPL theory · {done}/{total} lessons').replace('{pct}', prog.pct).replace('{done}', prog.doneLessons).replace('{total}', prog.totalLessons);
+
+    // Card 1: Continue / Start here
+    const nl = nextLessonInfo();
+    let c1;
+    if (!nl.lesson) {
+      c1 = `<button type="button" class="hd-card hd-c1" data-go="theory">
+        <span class="hd-k">${esc(tr('home.all_done', 'All lessons studied'))}</span>
+        <span class="hd-t">${esc(tr('home.all_done_t', 'Review any subject'))}</span>
+        <span class="hd-s">${esc(prog.doneLessons + '/' + prog.totalLessons)}</span>
+        <span class="hd-cta">${esc(tr('home.theory', 'Theory'))}${hsvg('chev')}</span></button>`;
+    } else {
+      const L = localizedLesson(nl.lesson);
+      const k = isNew ? tr('home.start_here', 'Start here') : tr('common.continue', 'Continue');
+      const cta = isNew ? tr('home.start', 'Start') : (nl.resume ? tr('home.resume', 'Resume') : tr('home.next_lesson', 'Next lesson'));
+      const meta = subjectName(nl.lesson.subject) + ' · ' + tr('home.lesson_n_of', 'Lesson {n} of {of}').replace('{n}', nl.index).replace('{of}', nl.of);
+      c1 = `<button type="button" class="hd-card hd-c1" data-lesson="${esc(nl.lesson.id)}">
+        <span class="hd-k">${esc(k)}</span>
+        <span class="hd-t">${esc(L.title)}</span>
+        <span class="hd-s">${esc(meta)}</span>
+        <span class="hd-cta">${esc(cta)}${hsvg('chev')}</span></button>`;
+    }
+    // Card 2: Today's exam
+    const te = todaysExam();
+    const teName = te.id === 'mixed' ? tr('exams.mixed', 'Mixed mock') : subjectName(te.id);
+    const teMeta = te.weak
+      ? tr('home.exam_weak', '{n} questions to revise in this subject').replace('{n}', te.weak)
+      : tr('home.exam_meta', 'Practice paper · {n} questions in the bank').replace('{n}', te.count);
+    const c2 = `<button type="button" class="hd-card hd-c2" data-exam="${esc(te.id)}">
+        <span class="hd-k">${esc(tr('home.todays_exam', "Today's exam"))}</span>
+        <span class="hd-t">${esc(teName)}</span>
+        <span class="hd-s">${esc(teMeta)}</span>
+        <span class="hd-cta">${esc(tr('home.start', 'Start'))}${hsvg('chev')}</span></button>`;
+    // Card 3: Circuit video
+    const c3 = `<button type="button" class="hd-card hd-c3" id="home-circuit-video">
+        <img src="assets/video/circuit-poster.jpg" alt="" loading="lazy" decoding="async" />
+        <span class="hd-ov">
+          <span class="hd-k">${esc(tr('home.circuit_video', 'Circuit video'))}</span>
+          <span class="hd-t">${esc(tr('home.circuit_video_t', 'A standard UK left-hand circuit'))}</span>
+          <span class="hd-s">${esc(tr('home.circuit_video_m', '4 min 13 s · narrated'))}</span>
+          <span class="hd-cta">${hsvg('play')}${esc(tr('home.watch', 'Watch'))}</span>
+        </span></button>`;
+
+    const acP = (typeof AircraftPref !== 'undefined') ? AircraftPref.resolve() : null;
+    const checks = acP ? (acP.id === 'c42' ? t('aircraft.checks_c42') : t('aircraft.checks')) : t('home.c42');
     const weak = Store.weakList ? Store.weakList(50) : [];
+    const groups = [
+      { key: 'study', title: tr('nav.study', 'Study'), icon: 'theory', go: 'study', allLabel: tr('home.see_all', 'See all') + ' — ' + tr('nav.study', 'Study'), items: [
+        { go: 'theory', icon: 'theory', title: tr('home.theory', 'Theory') },
+        { go: 'flashcards', icon: 'cards', title: tr('home.flashcards', 'Flashcards') },
+        { go: 'crp-drills', icon: 'calc', title: tr('home.crp_drills', 'CRP drills') },
+        { go: 'frtol-drills', icon: 'radio', title: tr('home.frtol_drills', 'FRTOL drills') } ] },
+      { key: 'fly', title: tr('home.fly', 'Fly'), icon: 'circuit', go: 'skills', allLabel: tr('home.see_all', 'See all') + ' — ' + tr('home.sec_skills', 'Flying skills'), items: [
+        { go: 'c42', icon: 'check', title: checks },
+        { go: 'circuits', icon: 'circuit', title: tr('home.circuits', 'Circuits') },
+        { go: 'landing', icon: 'land', title: tr('home.landing', 'T/O & landing') },
+        { go: 'emergencies', icon: 'alert', title: tr('home.emergencies', 'Emergencies') } ] },
+      { key: 'plan', title: tr('nav.plan', 'Plan'), icon: 'map', go: 'plan', allLabel: tr('home.see_all', 'See all') + ' — ' + tr('home.sec_plan', 'Plan a flight'), items: [
+        { go: 'flight-prep', icon: 'clip', title: tr('home.flight_prep', 'Flight preparation') },
+        { go: 'trip', icon: 'map', title: tr('home.trip', 'Plan a trip') },
+        { go: 'airfields', icon: 'runway', title: tr('home.airfields', 'Airfields') },
+        { go: 'log', icon: 'log', title: tr('home.sec_log', 'My log') } ] }
+    ];
     return `
-      <div class="home-head">
-        <div>
-          <div class="hero-badge">${esc(t('home.badge'))}</div>
-          <div class="home-progress">${ringSVG(prog.pct)}<div><strong>${prog.pct}%</strong><span>${esc(t('home.progress_meta', { done: prog.doneLessons, total: prog.totalLessons, known: prog.known, exams: prog.exams }))}</span></div></div>
-        </div>
-        ${acChip}
+      <div class="gold-rule" aria-hidden="true"><svg viewBox="0 0 24 24">${HICO.star}</svg></div>
+      <div class="hd-wel"><h2>${esc(hello)}</h2><p>${esc(sub)}</p></div>
+      <div class="hd-car" id="home-carousel" role="region" aria-roledescription="carousel" aria-label="${esc(tr('home.highlights', 'Highlights'))}" tabindex="0">
+        ${c1}${c2}${c3}
       </div>
-      ${continueCard()}
-      <div class="big-grid">
-        ${sections.map(x => `<button type="button" class="big-tile" data-go="${x.go}">
-          <span class="big-ico" aria-hidden="true">${x.icon}</span>
-          <span class="big-title">${esc(x.title)}</span>
-          <span class="big-meta">${esc(x.meta)}</span>
-        </button>`).join('')}
-      </div>
-      ${weak.length ? `<button type="button" class="hub-row hub-row-warn" data-go="weak">
-          <span class="hub-ico" aria-hidden="true">🎯</span>
-          <span class="hub-text"><span class="hub-title">${esc(tr('weak.title', 'Weak areas'))}</span><span class="hub-meta">${esc(tr('home.weak_count', '{n} questions to revise').replace('{n}', weak.length))}</span></span>
-          <span class="hub-chev" aria-hidden="true">›</span></button>` : ''}
+      <div class="hd-dots" id="home-dots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+      ${weak.length ? `<button type="button" class="hd-row hd-row-warn" data-go="weak">
+          <span class="hd-ico">${hsvg('target')}</span>
+          <span class="hd-row-t"><b>${esc(tr('weak.title', 'Weak areas'))}</b><span>${esc(tr('home.weak_count', '{n} questions to revise').replace('{n}', weak.length))}</span></span>
+          ${hsvg('chev', 'hd-chev')}</button>` : ''}
+      ${groups.map(homeGroup).join('')}
+      <button type="button" class="hd-row" data-go="settings">
+        <span class="hd-ico">${hsvg('gear')}</span>
+        <span class="hd-row-t"><b>${esc(tr('common.settings', 'Settings'))}</b><span>${esc(tr('home.sec_settings_meta', 'Language, aircraft, backup'))}</span></span>
+        ${hsvg('chev', 'hd-chev')}</button>
       <div class="disclaimer-inline">${esc(t('home.disclaimer'))}</div>
     `;
+  }
+
+  function bindHomeCarousel() {
+    const car = document.getElementById('home-carousel');
+    const dots = document.getElementById('home-dots');
+    if (!car || !dots) return;
+    const cards = Array.from(car.children);
+    const ds = Array.from(dots.children);
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = car.scrollWidth - car.clientWidth;
+      let idx;
+      if (car.scrollLeft >= max - 4) idx = cards.length - 1;
+      else {
+        const step = cards.length > 1 ? (cards[1].offsetLeft - cards[0].offsetLeft) : car.clientWidth;
+        idx = Math.round(car.scrollLeft / Math.max(1, step));
+      }
+      idx = Math.max(0, Math.min(cards.length - 1, idx));
+      ds.forEach((d, i) => d.classList.toggle('on', i === idx));
+      car.dataset.index = String(idx);
+    };
+    car.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
+    car.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      const step = cards.length > 1 ? (cards[1].offsetLeft - cards[0].offsetLeft) : car.clientWidth;
+      car.scrollBy({ left: e.key === 'ArrowRight' ? step : -step, behavior: 'smooth' });
+      e.preventDefault();
+    });
+    update();
+    const vid = document.getElementById('home-circuit-video');
+    if (vid) vid.addEventListener('click', () => {
+      go('circuits');
+      setTimeout(() => {
+        const v = main.querySelector('.lesson-video');
+        if (v) v.closest('.video-card').scrollIntoView({ block: 'center' });
+      }, 60);
+    });
   }
 
   /* ---------- HUBS ---------- */
@@ -832,7 +992,7 @@
       ${Diagrams.whizz()}
       <div class="card">
         <h3>What is it for?</h3>
-        <p style="color:#c9d6e8;font-size:0.9rem;margin-top:8px">The CRP-1 is the UK circular flight computer (slide rule). Microlight navigators use it for time/distance/speed, fuel, and a simplified wind triangle (heading & groundspeed). Same jobs as an E6B, UK packaging and teaching.</p>
+        <p style="color:#c9ced8;font-size:0.9rem;margin-top:8px">The CRP-1 is the UK circular flight computer (slide rule). Microlight navigators use it for time/distance/speed, fuel, and a simplified wind triangle (heading & groundspeed). Same jobs as an E6B, UK packaging and teaching.</p>
       </div>
       <div class="section-label">Step-by-step</div>
       <ol class="steps">
@@ -909,7 +1069,7 @@
       </div>
       <div class="card">
         <h3>${esc(t('settings.disclaimer_h'))}</h3>
-        <p style="font-size:0.88rem;color:#c9d6e8;margin-top:8px">${esc(t('settings.disclaimer'))}</p>
+        <p style="font-size:0.88rem;color:#c9ced8;margin-top:8px">${esc(t('settings.disclaimer'))}</p>
       </div>
       <div class="card backup-card">
         <h3>${esc(t('settings.backup_h'))}</h3>
@@ -994,6 +1154,7 @@
 
   function bind() {
     main.querySelectorAll('[data-go]').forEach(el => el.addEventListener('click', () => go(el.dataset.go)));
+    if (route.name === 'home') bindHomeCarousel();
     const cont = document.getElementById('home-continue');
     if (cont) cont.addEventListener('click', () => {
       if (lastActivity()) resumeActivity();

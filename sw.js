@@ -3,7 +3,7 @@
 /* PREVIEW build: own cache prefix so it never deletes or reuses the live site's caches
    (live and preview share the same github.io origin). */
 const CACHE_PREFIX = 'nppl-preview-';
-const CACHE_VERSION = CACHE_PREFIX + 'v2-20261029-logo';
+const CACHE_VERSION = CACHE_PREFIX + 'v3-20261030-layoutD';
 const SHELL = [
   './',
   './index.html',
@@ -15,6 +15,8 @@ const SHELL = [
   './assets/icons/icon-maskable-512.png',
   './assets/icons/favicon-32.png',
   './assets/icons/splash-logo.jpg',
+  './assets/img/logo-small.jpg',
+  './assets/img/web.svg',
   './assets/video/circuit-poster.jpg',
   './data/lessons.js',
   './data/flashcards.js',

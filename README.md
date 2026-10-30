@@ -98,3 +98,10 @@ Study aid only — confirm instructor / POH / AIP / Met Office / NATS. No Progre
 Live at **https://b68yp988sw-ctrl.github.io/full-nppl-insider/** — a pure static build (all progress in the browser's localStorage, PWA/offline supported).
 
 The in-app live METAR/TAF/NOTAM proxy (`/api/*` in `server.js`) is not part of the static build; on the hosted version the Plan-a-trip weather panel links to official sources (aviationweather.gov, Met Office, NATS) instead.
+
+## Preview: home layout D + logo theme (30 Oct 2026)
+
+- Home screen redesigned to mockup **D – carousel + grouped sections**: swipeable cards (Continue / Start here, Today's exam, Circuit video) with gold dots, then Study / Fly / Plan groups with clear headings and *See all* links, Settings and the disclaimer.
+- Whole app re-themed to match the logo (near-black + blue→violet, silver text, gold accents, web pattern backdrop). Bigger tap targets (filter chips and YouTube links ≥48 px).
+- New home labels are translated into cy, pl, fr, de, es, pt, ro — **these translations still need checking by native speakers**.
+- Service worker cache bumped to `nppl-preview-v3-20261030-layoutD`.
