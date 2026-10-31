@@ -25,9 +25,9 @@
   @keyframes dl{0%,27%{opacity:0}31%,100%{opacity:1}}
   @keyframes le{0%,2%{opacity:.25}6%,46%{opacity:1}52%,100%{opacity:.25}}
   @keyframes pz{0%,46%{opacity:.18}52%,97%{opacity:1}100%{opacity:.18}}
-  @keyframes cover{0%,52%{transform:translate(0,0);opacity:1}62%{transform:translate(-10px,6px) rotate(-25deg);opacity:0}100%{opacity:0}}
-  @keyframes tube{0%,62%{transform:translateX(16px)}74%,100%{transform:translateX(0)}}
-  @keyframes tubev{0%,62%{transform:translateY(12px)}74%,100%{transform:translateY(0)}}
+  @keyframes cover{0%,50%{transform:translate(0,0);opacity:1}57%{transform:translate(0,-9px);opacity:1}64%{transform:translate(-9px,-4px) rotate(-30deg);opacity:0}100%{opacity:0}}
+  @keyframes tube{0%,64%{transform:translateX(16px)}74%,100%{transform:translateX(0)}}
+  @keyframes tubev{0%,64%{transform:translateY(12px)}74%,100%{transform:translateY(0)}}
   @keyframes pok{0%,74%{opacity:0}78%,97%{opacity:1}100%{opacity:0}}
   @media (prefers-reduced-motion:reduce){*{animation:none!important}.lens,.cover{display:none}}
 </style>
@@ -54,7 +54,7 @@
 <g>
   <rect x="180.5" y="45" width="5" height="12" fill="none" stroke="#7d8296" stroke-dasharray="2 1.5"/>
   <g clip-path="url(#fwd)"><g class="tubev"><rect x="178.8" y="22" width="8.4" height="26" rx="1.6" fill="url(#metalh)" stroke="#3d3d6b" stroke-width=".6"/>
-    <g class="cover"><rect x="177.8" y="21" width="10.4" height="9" rx="2" fill="#dc2626"/><path d="M183 21 L176 10" stroke="#dc2626" stroke-width="2"/></g></g></g>
+    <g class="cover"><rect x="177.9" y="21.2" width="10.2" height="6.6" rx="2" fill="#dc2626"/><path d="M178.6 27.4 H187.4" stroke="#7f1d1d" stroke-width=".7"/><path d="M178.4 23.6 Q171 24 168 31" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round"/></g></g></g>
   <text x="196" y="30" font-size="6.2" font-weight="700" fill="#93c5fd">PITOT</text>
 </g>
 <!-- pitot zoom -->

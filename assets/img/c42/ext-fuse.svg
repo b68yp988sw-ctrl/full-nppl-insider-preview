@@ -31,10 +31,10 @@
 <!-- whole fuselage, left side, nose left -->
 <path d="M8 92 Q6 74 22 67 L40 58 L114 58 L126 66 L212 70 V77 L126 82 Q110 106 92 110 L28 110 Q8 106 8 92Z" fill="url(#skin)" stroke="#3d3d6b"/>
 <path d="M22 67 L40 58 L76 58 L76 84 L13 84 Q14 72 22 67Z" fill="url(#glass)" stroke="#3d3d6b" stroke-width=".7"/>
-<!-- high wing on top of the cabin (root section) and V-strut to the lower fuselage -->
+<!-- high wing on top of the cabin (root section) and V-strut to the lower fuselage; strut drawn first so its ends tuck into the wing -->
+<path d="M54 55.5 L84 103 L96 55" fill="none" stroke="#a6acbb" stroke-width="1.8" stroke-linejoin="round"/>
 <path d="M36 55.5 Q36 50.5 46 50 L110 52.6 L120 55.2 L110 57.6 L44 58.6 Q36 58.4 36 55.5Z" fill="url(#fab)" stroke="#a6acbb" stroke-width=".8"/>
 <text x="66" y="56.4" text-anchor="middle" font-size="4.6" font-weight="700" letter-spacing=".5" fill="#8d93a4">HIGH WING</text>
-<path d="M54 59 L84 103 L96 59" fill="none" stroke="#a6acbb" stroke-width="1.8" stroke-linejoin="round"/>
 <circle cx="84" cy="103" r="1.6" fill="#a6acbb"/>
 <text x="58" y="98" text-anchor="middle" font-size="5.6" font-weight="700" letter-spacing=".5" fill="#5b6077">GRP POD</text>
 <text x="168" y="76.5" text-anchor="middle" font-size="5.4" font-weight="700" letter-spacing=".5" fill="#5b6077">TAIL BOOM</text>
