@@ -3,7 +3,7 @@
 /* PREVIEW build: own cache prefix so it never deletes or reuses the live site's caches
    (live and preview share the same github.io origin). */
 const CACHE_PREFIX = 'nppl-preview-';
-const CACHE_VERSION = CACHE_PREFIX + 'v10-20261031-mark-next';
+const CACHE_VERSION = CACHE_PREFIX + 'v11-20261031-c42-circuit-pilot';
 const SHELL = [
   './',
   './index.html',
@@ -33,6 +33,7 @@ const SHELL = [
   './assets/img/c42/ext-elev.svg',
   './assets/img/c42/dep-power.svg',
   './assets/video/circuit-poster.jpg',
+  './assets/video/c42-circuit-poster.jpg',
   './data/lessons.js',
   './data/flashcards.js',
   './data/questions.js',
