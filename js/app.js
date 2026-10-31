@@ -714,7 +714,7 @@
     btnBack.hidden = true;
     const hist = Store.load().examHistory.slice(-5).reverse();
     return `
-      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:12px">Original UK NPPL / FRTOL-style questions. Not QuizAero. Timed or untimed. Study pass bar ~75%.</p>
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:12px">Original UK NPPL / FRTOL-style questions. Timed or untimed. Study pass bar ~75%.</p>
       <div class="card card-tap" data-exam="mixed"><h3>Mixed mock</h3><div class="meta">Questions from all subjects</div></div>
       ${subjects().map(s => {
         const n = questions().filter(q => q.subject === s.id).length;
