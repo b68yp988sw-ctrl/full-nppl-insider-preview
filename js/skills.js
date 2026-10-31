@@ -160,7 +160,7 @@ const SkillsUI = (() => {
           <source src="assets/video/c42-circuit.mp4" type="video/mp4" />
           Your browser cannot play this video.
         </video>
-        <p class="yt-note">Legs, left- and right-hand circuits, overhead join, C42 take-off, circuit and approach speeds (80 hp and 100 hp) and flap, downwind call and checks, aiming point, crosswind technique, round-out, touch-and-go and go-around. Figures from the C42 handbook. Loads only when you tap play (about 28 MB, needs a connection — not saved offline). Study aid only; follow your instructor, POH and local procedures.</p>
+        <p class="yt-note">Legs, left- and right-hand circuits, overhead join, C42 take-off, circuit and approach speeds (80 hp and 100 hp) and flap, downwind call and checks, aiming point, crosswind technique, round-out, touch-and-go and go-around. Figures from the C42 handbook. Loads only when you tap play (about 44 MB, needs a connection — not saved offline). Study aid only; follow your instructor, POH and local procedures.</p>
       </div>` : '';
     return `
       <div class="hero" style="padding-top:0">

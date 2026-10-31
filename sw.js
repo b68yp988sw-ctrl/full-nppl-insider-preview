@@ -3,7 +3,7 @@
 /* PREVIEW build: own cache prefix so it never deletes or reuses the live site's caches
    (live and preview share the same github.io origin). */
 const CACHE_PREFIX = 'nppl-preview-';
-const CACHE_VERSION = CACHE_PREFIX + 'v14-20261031-c42-circuit-fixes';
+const CACHE_VERSION = CACHE_PREFIX + 'v15-20261031-c42-video-size';
 const SHELL = [
   './',
   './index.html',
