@@ -1185,7 +1185,10 @@
     if (speak) {
       const l = lessons().find(x => x.id === route.id);
       speak.addEventListener('click', () => {
-        const text = strip(document.getElementById('lesson-content').innerText) + ' ' + (l.speakExtra || '');
+        const node = document.getElementById('lesson-content').cloneNode(true);
+        node.querySelectorAll('svg, .no-speak, .vc-wrap, [data-widget]').forEach(n => n.remove());
+        node.querySelectorAll('li, p, h2, h3, h4, tr, div').forEach(n => n.append(' '));
+        const text = strip(node.textContent) + ' ' + (l.speakExtra || '');
         AudioSpeak.speak(text);
       });
     }
