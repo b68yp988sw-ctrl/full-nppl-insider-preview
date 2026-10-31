@@ -621,7 +621,7 @@
       ${doneBanner}
       ${navChart}
       ${ls.map(l => { const ll = localizedLesson(l); return `
-        <div class="card card-tap" data-lesson="${ll.id}">
+        <div class="card card-tap${st.lessonsDone[ll.id] ? ' is-studied' : ''}" data-lesson="${ll.id}">
           <div class="meta">${esc(ll.chapter)}</div>
           <h3>${esc(ll.title)}</h3>
           ${st.lessonsDone[ll.id]

@@ -3,7 +3,7 @@
 /* PREVIEW build: own cache prefix so it never deletes or reuses the live site's caches
    (live and preview share the same github.io origin). */
 const CACHE_PREFIX = 'nppl-preview-';
-const CACHE_VERSION = CACHE_PREFIX + 'v15-20261031-c42-video-size';
+const CACHE_VERSION = CACHE_PREFIX + 'v16-20261031-chart-chilterns';
 const SHELL = [
   './',
   './index.html',
@@ -66,6 +66,8 @@ const SHELL = [
   './js/chart-ui.js',
   './js/flight-prep-ui.js',
   './js/lesson-widgets.js',
+  './js/vfrchart-data.js',
+  './img/chart-relief.jpg',
   './js/app.js',
   './js/airfields-ui.js',
   './js/crp-drills-ui.js',

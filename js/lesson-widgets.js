@@ -1,11 +1,12 @@
 /* FULL NPPL INSIDER — interactive lesson widgets.
-   Currently: an ORIGINAL, fictional sample 1:500,000-style VFR chart (vector SVG) drawn in the style of the
-   UK CAA ICAO 1:500,000 chart legend (Edition 2025 legend sheet). It is NOT a copy of any CAA/NATS chart,
-   it shows an invented area, and it must never be used for navigation.
-   Widgets are created automatically when a lesson containing <div data-widget="vfrchart"> is rendered. */
+   The sample chart is a STUDY RENDERING of a real area of England (the Chilterns and Thames Valley: Oxford and
+   Benson to Luton and Elstree, south past Booker and Denham to the edge of the Heathrow CTR) drawn in the style of the UK CAA ICAO 1:500,000 chart legend (2025 legend sheet), built from public
+   UK data (OS OpenData, UK AIP via NATS AIS, yaixm, OurAirports, WMM2025). It is NOT a CAA chart,
+   it is not for navigation and its data may be out of date. The chart geometry lives in js/vfrchart-data.js and
+   is loaded on demand. Widgets are created automatically when a lesson containing <div data-widget="vfrchart"> is rendered. */
 (function () {
   'use strict';
-  const W = 640, H = 480;                 // world units; 10 units = 1 NM
+  let W = 640, H = 480;                   // replaced by the chart data size on load
   const C = {
     blue: '#3a3fa6', blueT: '#8f93dc', mag: '#a8227f', magT: '#e3a1cf', pink: '#f7d6ec',
     red: '#c2185b', land: '#eef2dc', t1: '#e4dfbd', t2: '#d8c99c', t3: '#c9b07f', cont: '#9a7d55',
@@ -70,8 +71,8 @@
     { id: 'scale', grp: 'Chart basics', name: 'Scale bar (NM / km)', mini: m => `<path d="M3,14H37M3,10V18M20,12V16M37,10V18" stroke="${C.ink}" stroke-width="1.4"/>`, what: '1:500,000 means 1 cm on the chart is 5 km (about 2.7 NM) on the ground. 1 NM is about 3.7 mm. On a 1:250,000 chart everything is twice as big.', todo: 'Measure distances with the scale bar or a plotter set to the right scale (NM, not km or statute miles).' },
     { id: 'graticule', grp: 'Chart basics', name: 'Latitude & longitude lines', mini: m => `<path d="M2,8H38M2,18H38M12,2V22M28,2V22" stroke="#6a6a8a" stroke-width=".8"/>`, what: 'Graticule lines every 30 minutes of latitude and longitude, with minute ticks on the edges. 1 minute of latitude = 1 NM. The 1:500,000 chart is a Lambert conformal projection, so meridians converge slightly.', todo: 'Measure track angles against a meridian near the middle of the leg. Read positions as degrees and minutes N and W.' },
     { id: 'mef', grp: 'Chart basics', name: 'Maximum Elevation Figure (MEF)', mini: m => `<text x="14" y="20" ${FONT} font-size="18" font-weight="bold" fill="${C.blue}">2</text><text x="25" y="11" ${FONT} font-size="9" font-weight="bold" fill="${C.blue}">0</text>`, what: 'The big digit is thousands of feet and the small one hundreds, above mean sea level, for the highest known feature in that half-degree box, including terrain and obstacles, with an allowance for unknown ones. "2⁰" = 2,000 ft AMSL.', todo: 'Use it as a quick warning of high ground or masts. The legend says it is NOT a safety altitude: work out your own minimum safe altitude for each leg.' },
-    { id: 'isogonal', grp: 'Chart basics', name: 'Isogonal (magnetic variation)', mini: m => `<path d="M3,20L37,4" stroke="${C.mag}" stroke-width="1.2" stroke-dasharray="4 2"/><text x="20" y="11" ${FONT} font-size="6" fill="${C.mag}">1°W</text>`, what: 'A dashed line joining places with the same magnetic variation. In the south of England it is now around 0–1° West (it changes slowly every year).', todo: 'Convert true track to magnetic: variation West, magnetic best (add); variation East, magnetic least (subtract). Use the variation printed near your route on the current chart.' },
-    { id: 'terrain', grp: 'Topography', name: 'Contours & terrain colouring', mini: m => `<rect x="2" y="2" width="36" height="20" fill="${C.t1}"/><path d="M6,20 Q20,0 34,20" fill="${C.t2}" stroke="${C.cont}" stroke-width=".8"/><path d="M13,20 Q20,8 27,20" fill="${C.t3}" stroke="${C.cont}" stroke-width=".8"/>`, what: 'Thin brown contour lines join ground of equal height and the colour gets darker as the ground gets higher (layer tints). Close contours mean steep ground. Here: 500, 1,000 and 1,500 ft AMSL.', todo: 'Expect lower cloud bases, hill fog and turbulence over high ground. Plan to clear terrain and obstacles by a safe margin and never scud-run into rising ground.' },
+    { id: 'isogonal', grp: 'Chart basics', name: 'Isogonal (magnetic variation)', mini: m => `<path d="M3,20L37,4" stroke="${C.mag}" stroke-width="1.2" stroke-dasharray="4 2"/><text x="20" y="11" ${FONT} font-size="6" fill="${C.mag}">1°E</text>`, what: 'A dashed line joining places with the same magnetic variation. Across this sheet in 2026 it is about 1° East: it moved from West to East around 2019–2022 and is still drifting east by about 0.2° a year, so always use the current chart.', todo: 'Convert true track to magnetic: variation West, magnetic best (add); variation East, magnetic least (subtract). Use the variation printed near your route on the current chart.' },
+    { id: 'terrain', grp: 'Topography', name: 'Contours & terrain colouring', mini: m => `<rect x="2" y="2" width="36" height="20" fill="${C.t1}"/><path d="M6,20 Q20,0 34,20" fill="${C.t2}" stroke="${C.cont}" stroke-width=".8"/><path d="M13,20 Q20,8 27,20" fill="${C.t3}" stroke="${C.cont}" stroke-width=".8"/>`, what: 'Thin brown contour lines join ground of equal height and the colour gets darker as the ground gets higher (layer tints). Close contours mean steep ground. On this study chart ground above 500 ft AMSL is tinted, with a hillshade and extra 250 ft and 750 ft contours (real CAA charts tint in bands from 500 ft upwards).', todo: 'Expect lower cloud bases, hill fog and turbulence over high ground. Plan to clear terrain and obstacles by a safe margin and never scud-run into rising ground.' },
     { id: 'spot', grp: 'Topography', name: 'Spot heights', mini: m => `<circle cx="12" cy="13" r="1.6" fill="${C.ink}"/><text x="16" y="15" ${FONT} font-size="8" fill="${C.ink}">1043</text>`, what: 'A dot with a number is the height of that point in feet above mean sea level. The highest spot heights are often hilltops.', todo: 'Use them with the MEF when you work out a minimum safe altitude, and as checkpoints when hills are visible.' },
     { id: 'water', grp: 'Topography', name: 'Water: coast, rivers & lakes', mini: m => `<rect x="2" y="2" width="36" height="20" fill="${C.water}"/><path d="M2,16 Q14,6 22,14 T38,10" stroke="${C.river}" stroke-width="1.6" fill="none"/>`, what: 'Blue shows sea, lakes, reservoirs and the larger rivers. Water features are some of the best checkpoints because their shapes are distinctive.', todo: 'Choose large, unique water shapes as checkpoints. Small rivers are hard to see from height, especially in summer.' },
     { id: 'town', grp: 'Topography', name: 'Towns & built-up areas', mini: m => `<path d="M5,6 L30,4 L36,16 L14,20 Z" fill="${C.town}" stroke="${C.townE}" stroke-width=".8"/>`, what: 'Yellow areas show the outline of towns and cities. Their shape helps you identify them from the air.', todo: 'Over a congested area SERA.5005(f) needs at least 1,000 ft above the highest obstacle within 600 m (and enough height to glide clear if the engine stops).' },
@@ -104,122 +105,64 @@
     { id: 'obst_high', grp: 'Navigation & radio', name: 'Exceptionally high obstacle (1,000 ft AGL or more)', mini: m => S.obstHigh(9, 15) + `<text x="16" y="12" ${FONT} font-size="6" font-style="italic" fill="${C.blue}">1678</text><text x="16" y="19" ${FONT} font-size="5.5" fill="${C.blue}">(1031)</text>`, what: 'Solid symbol with light rays: an exceptionally high lighted obstacle 1,000 ft or more above ground level.', todo: 'These masts often have guy wires a long way out. Plan your minimum safe altitude well above them, or route round.' },
     { id: 'turbine', grp: 'Navigation & radio', name: 'Wind turbines / wind farm', mini: m => S.turbine(10, 14) + S.turbine(18, 14) + S.turbine(26, 14), what: 'Three-bladed symbol. A single turbine or a group (wind farm), with elevation AMSL in italics and height AGL in brackets.', todo: 'Keep well clear: there is turbulence downwind and the blades are hard to see edge-on. Large wind farms can also clutter radar.' },
     { id: 'navaid', grp: 'Navigation & radio', name: 'Radio nav aids (VOR, NDB)', mini: m => S.vor(12, 12) + S.ndb(29, 12), what: 'Hexagon = VOR (with a compass rose oriented on magnetic north). Dotted circles = NDB. A box round a VOR means a co-located DME. Name, ident and frequency are printed next to them.', todo: 'They are useful landmarks and for position fixes. They also often mark busy IFR routes, so keep a good lookout near them.' },
-    { id: 'freq', grp: 'Navigation & radio', name: 'Frequency boxes (ATZ table, LARS, FIS)', mini: m => `<rect x="2" y="6" width="36" height="12" fill="#fff" stroke="${C.blue}" stroke-width=".8"/><text x="20" y="14" ${FONT} font-size="5.5" text-anchor="middle" fill="${C.blue}">LARS 125.555</text>`, what: 'MATZ boxes show the penetration frequency and "LARS" if the unit gives a radar service. ATZ frequencies are listed in a table on the chart. LARS units give a Basic or Traffic Service up to FL95 within about 30 NM (chart legend; UK AIP ENR 1.6).', todo: 'Write the frequencies for each leg on your plog before you go and check them against the UK AIP or the aerodrome plate. Frequencies change. The ones on this sample are invented.' },
+    { id: 'freq', grp: 'Navigation & radio', name: 'Frequency boxes (ATZ table, LARS, FIS)', mini: m => `<rect x="2" y="6" width="36" height="12" fill="#fff" stroke="${C.blue}" stroke-width=".8"/><text x="20" y="14" ${FONT} font-size="5.5" text-anchor="middle" fill="${C.blue}">LARS 125.555</text>`, what: 'MATZ boxes show the penetration frequency and "LARS" if the unit gives a radar service. ATZ frequencies are listed in a table on the chart. LARS units give a Basic or Traffic Service up to FL95 within about 30 NM (chart legend; UK AIP ENR 1.6).', todo: 'Write the frequencies for each leg on your plog before you go and check them against the UK AIP or the aerodrome plate. Frequencies change. The frequencies on this study chart are taken from the UK AIP (AIRAC 2026-10-29) but can change at any time.' },
     { id: 'asr', grp: 'Navigation & radio', name: 'Altimeter Setting Region boundary', mini: m => `<path d="M2,12H38" stroke="${C.blueT}" stroke-width="1.2"/><path d="M8,8V16M4,12H12M22,8V16M18,12H26M34,8V16M30,12H38" stroke="${C.blueT}" stroke-width="1.6"/>`, what: 'A row of crosses separates Altimeter Setting Regions. Each region has a forecast Regional Pressure Setting (RPS), the lowest forecast QNH for the hour.', todo: 'Below the transition altitude en route use the RPS (or a nearby aerodrome QNH). Under and inside a CTR/TMA use the QNH of an aerodrome under that airspace, as the chart note and UK AIP ENR 1.7 say.' },
     { id: 'bird', grp: 'Navigation & radio', name: 'Bird sanctuary', mini: m => S.bird(20, 12), what: 'Bird in a circle with name/effective altitude in thousands of feet. Pilots are asked to avoid these areas during the periods in UK AIP ENR 5.6.', todo: 'Route around or above the stated altitude. A bird strike on a microlight windscreen or propeller can be serious.' },
     { id: 'hirta', grp: 'Navigation & radio', name: 'High Intensity Radio Transmission Area (HIRTA)', mini: m => S.hirta(20, 12), what: 'Gridded circle: strong radio transmissions that can interfere with avionics and, close in, be harmful. Effective altitude in thousands of feet (UK AIP ENR 5.3).', todo: 'Avoid flying through it below the stated altitude.' }
   ];
+  /* extra legend entries for features on the study chart */
+  const add = (after, o) => { const i = L.findIndex(x => x.id === after); L.splice(i + 1, 0, o); };
+  add('town', { id: 'woods', grp: 'Topography', name: 'Woods & forest', mini: m => `<path d="M4,18 Q6,4 18,6 T36,12 Q30,22 4,18Z" fill="#bfe0a4"/>`, what: 'Green areas are woods and forest. The current CAA 1:500,000 chart does not normally show woods, but large woods (on this sheet, the Chiltern beechwoods such as Wendover Woods and Ashridge) are good landmarks, so this study chart includes them.', todo: 'Use the shape of large woods with roads and rivers to confirm your position. Small woods all look alike from the air.' });
+  add('roads', { id: 'power', grp: 'Topography', name: 'Power lines (pylons)', mini: m => `<path d="M2,12H38" stroke="#7a7a7a" stroke-width="1"/><path d="M6,12h.1M18,12h.1M30,12h.1" stroke="#555" stroke-width="3.5" stroke-linecap="round"/>`, what: 'Overhead high-voltage power lines on pylons (from OS data). Pylons are often 150 ft high or more and the wires are almost invisible. The CAA chart only shows some major lines.', todo: 'Treat every line as an obstacle, especially in valleys and when low and looking for a field. Look for the pylons, not the wires.' });
+  add('power', { id: 'np', grp: 'Topography', name: 'National Park boundary', mini: m => `<path d="M2,12H38" stroke="#3f8f3a" stroke-width="2" stroke-dasharray="6 3"/>`, what: 'Green dashed line: the boundary of a National Park (for example the New Forest or South Downs). This is not airspace, but it is a noise-sensitive area where people and animals are easily disturbed.', todo: 'Fly considerately: keep higher than you need to over villages and livestock, and avoid repeated low passes.' });
+  add('classE', { id: 'airway', grp: 'Airspace', name: 'Airways (lower airspace)', mini: m => `<path d="M2,12H38" stroke="#7d74c9" stroke-width="1.6"/><text x="20" y="9" ${FONT} font-size="6" text-anchor="middle" fill="#5c53b0" font-weight="bold">L620 FL85+</text>`, what: 'ATS routes for IFR traffic. In the UK most airways are Class A corridors whose base is shown, e.g. "FL85+". The CAA chart draws them as part of the Class A band; this study chart also draws the centre-line and route name.', todo: 'An NPPL holder can never enter Class A. Know the base of any airway above your route and stay well below it, allowing for altimeter error.' });
+  add('civil_ltd', { id: 'strip', grp: 'Aerodromes', name: 'Small airstrip / farm strip', mini: m => `<circle cx="20" cy="12" r="3.2" fill="#fff" stroke="${C.blue}" stroke-width="1.2"/>`, what: 'Small circle: an unlicensed private strip. The CAA chart only shows strips whose owners ask for them; the ones here come from OurAirports (crowd-sourced), so some may be closed or wrongly placed.', todo: 'Never land without the owner\'s permission (PPR). Expect non-radio traffic and keep a good lookout near any strip.' });
+  add('hirta', { id: 'gvs', grp: 'Navigation & radio', name: 'Gas venting station & laser sites', mini: m => `<circle cx="12" cy="12" r="6" fill="#fff" stroke="${C.red}" stroke-width="1.2"/><text x="12" y="14.5" ${FONT} font-size="6.5" font-weight="700" text-anchor="middle" fill="${C.red}">G</text><circle cx="29" cy="14" r="4.5" fill="#fff" stroke="${C.red}" stroke-width="1.2"/><circle cx="29" cy="14" r="1.5" fill="${C.red}"/>`, what: 'Gas venting stations (high-pressure gas can be released up to the stated height) and laser sites from UK AIP ENR 5.3 / 5.5.', todo: 'Avoid overflying them below the stated altitude.' });
   const BY = {}; L.forEach(i => BY[i.id] = i);
+  /* legend id -> chart feature types (data-f) and notes for symbols not found in this area */
+  const MAP = {
+    edition: ['margin'], scale: ['margin'], graticule: ['graticule'], mef: ['mef'], isogonal: ['isogonal'], terrain: ['terrain'], spot: ['spot'],
+    water: ['water', 'sea'], town: ['town', 'village'], woods: ['woods'], roads: ['motorway', 'roads', 'rail'], power: ['power'], np: ['np'],
+    classA: ['classA'], classD_ctr: ['ctr'], classD_cta: ['classD'], classE: ['classE'], airway: ['airway'], tmz: ['tmz'], atz: ['atz'], matz: ['matz'],
+    danger: ['danger'], danger_notam: ['danger'], restricted: ['restricted'],
+    civil_ad: ['ad_civ'], civil_ltd: ['ad_civ'], training: ['ad_civ'], strip: ['strip'], military_ad: ['ad_mil'], heliport: ['heliport'], microlight: ['microlight'],
+    glider: ['glider'], para: ['dz'], disused: ['disused'], vrp: ['vrp'], obst: ['obstacle'], obst_lit: ['obstacle'], turbine: ['turbine'], navaid: ['vor', 'ndb', 'dme'],
+    freq: ['freq', 'fis'], hirta: ['hirta'], gvs: ['gvs', 'laser']
+  };
+  const NONE = {
+    rmz: 'There is no RMZ or RMZ/TMZ in this area of the chart.',
+    tmz: 'There is no TMZ in this area of the chart.',
+    classE: 'There is no Class E airspace in this area of the chart.',
+    restricted: 'There is no Restricted Area in this area of the chart.',
+    np: 'There is no National Park in this area. The Chilterns are a National Landscape (AONB), which is not an aeronautical feature and is not drawn.',
+    prohibited: 'There is no Prohibited Area in this area of the chart.',
+    customs: 'Some aerodromes here (for example London Luton) have customs facilities, but this study chart does not draw the pecked customs boxes.',
+    obst_high: 'No obstacle of 1,000 ft AGL or more stands in this area.',
+    asr: 'No Altimeter Setting Region boundary is drawn on this study chart.',
+    bird: 'No bird sanctuary is shown in this area on this study chart.'
+  };
+  L.forEach(i => { i.f = MAP[i.id] || []; i.none = NONE[i.id] || ''; });
 
-  /* ---------- the sample map ---------- */
-  function feat(id, inner) { return `<g data-f="${id}" class="vc-f">${inner}</g>`; }
-
-  function buildMap(p) {
-    let s = '';
-    s += `<defs>
-      <pattern id="${p}hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="4" fill="none"/><line x1="0" y1="0" x2="0" y2="4" stroke="${C.red}" stroke-width="1.6"/></pattern>
-      <clipPath id="${p}ctr"><path d="M380,290 L470,285 L492,330 L470,382 L392,386 L366,338 Z"/></clipPath>
-      <clipPath id="${p}cta"><path d="M340,262 L500,252 L536,330 L506,412 L360,420 L320,340 Z"/></clipPath>
-      <clipPath id="${p}tma"><path d="M520,0 L640,0 L640,190 L560,170 Z"/></clipPath>
-      <clipPath id="${p}d123"><path d="M285,120 L345,112 L360,160 L318,186 L278,165 Z"/></clipPath>
-      <clipPath id="${p}e"><path d="M520,410 L640,380 L640,480 L540,480 Z"/></clipPath>
-    </defs>`;
-    // land + sea
-    s += `<rect width="${W}" height="${H}" fill="${C.land}"/>`;
-    s += feat('water', `<path d="M0,395 C40,388 70,410 110,420 C150,430 170,452 220,458 C260,463 280,480 290,480 L0,480 Z" fill="${C.water}"/>
-      <path d="M0,395 C40,388 70,410 110,420 C150,430 170,452 220,458 C260,463 280,480 290,480" fill="none" stroke="${C.river}" stroke-width="1"/>
-      <path d="M640,230 C600,236 575,262 548,268 C520,276 505,300 470,312 C440,322 420,350 380,356 C340,362 300,390 250,400 C215,407 190,430 170,442" fill="none" stroke="${C.river}" stroke-width="2"/>
-      <path d="M232,214 C246,206 262,210 266,220 C270,232 254,240 240,236 C228,232 224,220 232,214 Z" fill="${C.water}" stroke="${C.river}" stroke-width=".8"/>
-      ${label(249, 246, 'Holm Water', { size: 4.5, fill: C.river, italic: true })}${label(560, 263, 'R. Wend', { size: 4.5, fill: C.river, italic: true, rotate: -15 })}${label(60, 450, 'BRANSEA BAY', { size: 6, fill: C.river, italic: true })}`);
-    // terrain
-    s += feat('terrain', `<path d="M380,40 C420,20 520,30 560,70 C600,110 590,170 540,190 C500,206 430,196 400,170 C370,140 350,70 380,40 Z" fill="${C.t1}" stroke="${C.cont}" stroke-width=".6"/>
-      <path d="M410,60 C440,45 510,55 535,85 C560,115 548,160 515,170 C480,180 440,170 420,148 C400,125 390,75 410,60 Z" fill="${C.t2}" stroke="${C.cont}" stroke-width=".6"/>
-      <path d="M445,85 C465,75 500,82 512,100 C524,120 512,145 490,148 C468,151 452,140 446,124 C440,108 436,92 445,85 Z" fill="${C.t3}" stroke="${C.cont}" stroke-width=".6"/>
-      <path d="M40,40 C70,25 120,35 128,58 C134,78 110,92 80,90 C55,88 30,62 40,40 Z" fill="${C.t1}" stroke="${C.cont}" stroke-width=".6"/>
-      ${label(398, 58, '500', { size: 3.5, fill: C.cont })}${label(424, 74, '1000', { size: 3.5, fill: C.cont })}${label(458, 92, '1500', { size: 3.5, fill: C.cont })}${label(470, 186, 'HARROW DOWNS', { size: 6, fill: '#6d5532', weight: 'bold' })}`);
-    s += feat('spot', S.spot(482, 116) + label(495, 118, '1643', { size: 5.5 }) + S.spot(86, 60) + label(97, 62, '712', { size: 5.5 }) + S.spot(560, 120) + label(571, 122, '904', { size: 5.5 }) + S.spot(220, 330) + label(229, 332, '262', { size: 4.5 }));
-    // towns, roads, rail
-    s += feat('town', `<path d="M418,312 L452,306 L462,330 L446,346 L420,340 Z" fill="${C.town}" stroke="${C.townE}" stroke-width=".7"/>${label(440, 355, 'Keston', { size: 6.5, weight: 'bold' })}
-      <path d="M150,300 L176,296 L184,318 L160,326 Z" fill="${C.town}" stroke="${C.townE}" stroke-width=".7"/>${label(166, 334, 'Marbury', { size: 6, weight: 'bold' })}
-      <path d="M560,330 L576,326 L582,340 L566,346 Z" fill="${C.town}" stroke="${C.townE}" stroke-width=".7"/>${label(571, 354, 'Hawley', { size: 5 })}
-      <circle cx="300" cy="230" r="3" fill="${C.town}" stroke="${C.townE}" stroke-width=".5"/>${label(300, 225, 'Ashlea', { size: 4.5 })}
-      <circle cx="350" cy="420" r="3" fill="${C.town}" stroke="${C.townE}" stroke-width=".5"/>${label(350, 432, 'Fenby', { size: 4.5 })}`);
-    s += feat('roads', `<path d="M0,280 C80,290 140,300 170,310 C240,330 330,318 430,326 C500,332 560,336 640,340" fill="none" stroke="${C.road}" stroke-width="2"/>
-      <path d="M440,330 C430,250 400,210 330,180 C280,160 200,120 150,0" fill="none" stroke="${C.road}" stroke-width="1.2"/>
-      <path d="M0,350 C100,350 180,360 250,372 C330,386 420,370 640,300" fill="none" stroke="${C.ink}" stroke-width="1"/>
-      <path d="M0,350 C100,350 180,360 250,372 C330,386 420,370 640,300" fill="none" stroke="${C.ink}" stroke-width="3" stroke-dasharray=".6 7"/>
-      ${label(90, 280, 'M47', { size: 5, fill: C.road, weight: 'bold' })}`);
-    // graticule + MEF
-    let g = '';
-    [90, 390].forEach((y, i) => { g += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#6a6a8a" stroke-width=".6"/>` + label(4, y - 2, ['52°00\'N', '51°30\'N'][i], { size: 5, anchor: 'start', fill: '#4a4a6a' }); for (let x = 0; x < W; x += 10) g += `<line x1="${x}" y1="${y - 1.5}" x2="${x}" y2="${y + 1.5}" stroke="#6a6a8a" stroke-width=".4"/>`; });
-    [40, 225, 410, 595].forEach((x, i) => { g += `<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#6a6a8a" stroke-width=".6"/>` + label(x + 2, 8, ['2°00\'W', '1°30\'W', '1°00\'W', '0°30\'W'][i], { size: 5, anchor: 'start', fill: '#4a4a6a' }); for (let y = 0; y < H; y += 10) g += `<line x1="${x - 1.5}" y1="${y}" x2="${x + 1.5}" y2="${y}" stroke="#6a6a8a" stroke-width=".4"/>`; });
-    s += feat('graticule', g);
-    const mef = (x, y, a, b) => `<text x="${x}" y="${y}" ${FONT} font-size="30" font-weight="bold" fill="${C.blue}" fill-opacity=".8">${a}</text><text x="${x + 17}" y="${y - 14}" ${FONT} font-size="15" font-weight="bold" fill="${C.blue}" fill-opacity=".8">${b}</text>`;
-    s += feat('mef', mef(110, 250, 1, 0) + mef(290, 300, 1, 0) + mef(475, 240, 2, 0) + mef(600, 50, 2, 0) + mef(60, 34, 1, 1));
-    // isogonal
-    s += feat('isogonal', `<path d="M250,0 C270,160 300,320 330,480" fill="none" stroke="${C.mag}" stroke-width="1" stroke-dasharray="6 3"/>${label(262, 60, '1°W', { size: 6, fill: C.mag, rotate: 80 })}${label(318, 420, '1°W', { size: 6, fill: C.mag, rotate: 78 })}`);
-    // ASR
-    let asr = `<path d="M0,190 L230,200" stroke="${C.blueT}" stroke-width=".8"/>`; for (let x = 8; x < 230; x += 22) { const y = 190 + x * 10 / 230; asr += `<path d="M${x - 4},${y.toFixed(1)}H${x + 4}M${x},${(y - 4).toFixed(1)}V${(y + 4).toFixed(1)}" stroke="${C.blueT}" stroke-width="1.3"/>`; }
-    s += feat('asr', asr + label(60, 184, 'WOLD ASR', { size: 5, fill: C.blue }) + label(60, 204, 'SOLENT ASR', { size: 5, fill: C.blue }));
-    // Class A TMA corner + airway
-    s += feat('classA', `<g clip-path="url(#${p}tma)"><path d="M520,0 L560,170 L640,190" fill="none" stroke="${C.mag}" stroke-width="14" stroke-opacity=".38"/></g><path d="M520,0 L560,170 L640,190" fill="none" stroke="${C.mag}" stroke-width="1.6"/>${label(598, 150, 'TMA', { size: 6, fill: C.mag, weight: 'bold' })}<rect x="583" y="154" width="9" height="8" fill="${C.mag}"/>${label(587.5, 160.5, 'A', { size: 6, fill: '#fff', weight: 'bold', halo: false })}${label(612, 161, '3500\'+', { size: 6, fill: C.mag, weight: 'bold' })}
-      <path d="M0,150 L300,0" stroke="${C.mag}" stroke-width="22" stroke-opacity=".16"/><path d="M0,138 L276,0 M0,162 L324,0" stroke="${C.mag}" stroke-width="1.2"/>${label(150, 78, 'L10', { size: 6, fill: C.mag, weight: 'bold', rotate: -26.5 })}<g transform="rotate(-26.5 166 70)"><rect x="162" y="64" width="9" height="8" fill="${C.mag}"/>${label(166.5, 70.5, 'A', { size: 6, fill: '#fff', weight: 'bold', halo: false })}</g>${label(186, 61, 'FL55+', { size: 6, fill: C.mag, weight: 'bold', rotate: -26.5 })}`);
-    // Class D CTA + CTR
-    s += feat('classD_cta', `<g clip-path="url(#${p}cta)"><path d="M340,262 L500,252 L536,330 L506,412 L360,420 L320,340 Z" fill="none" stroke="${C.blue}" stroke-width="12" stroke-opacity=".3"/></g><path d="M340,262 L500,252 L536,330 L506,412 L360,420 L320,340 Z" fill="none" stroke="${C.blue}" stroke-width="1.6"/>${label(372, 274, 'KESTON CTA', { size: 5.5, fill: C.blue, weight: 'bold', anchor: 'start' })}<rect x="408" y="276" width="8" height="7" fill="${C.blue}"/>${label(412, 281.8, 'D', { size: 5.5, fill: '#fff', weight: 'bold', halo: false })}${label(420, 282, '1500\'-3500\'', { size: 5.5, fill: C.blue, weight: 'bold', anchor: 'start' })}`);
-    s += feat('classD_ctr', `<path d="M380,290 L470,285 L492,330 L470,382 L392,386 L366,338 Z" fill="${C.pink}" fill-opacity=".8"/><g clip-path="url(#${p}ctr)"><path d="M380,290 L470,285 L492,330 L470,382 L392,386 L366,338 Z" fill="none" stroke="${C.blue}" stroke-width="10" stroke-opacity=".3"/></g><path d="M380,290 L470,285 L492,330 L470,382 L392,386 L366,338 Z" fill="none" stroke="${C.blue}" stroke-width="1.6"/>${label(398, 376, 'KESTON CTR', { size: 5.5, fill: C.blue, weight: 'bold', anchor: 'start' })}<rect x="436" y="370" width="8" height="7" fill="${C.blue}"/>${label(440, 375.8, 'D', { size: 5.5, fill: '#fff', weight: 'bold', halo: false })}${label(447, 376, 'SFC-2500\'', { size: 5.5, fill: C.blue, weight: 'bold', anchor: 'start' })}`);
-    // Class E
-    s += feat('classE', `<g clip-path="url(#${p}e)"><path d="M520,410 L640,380" fill="none" stroke="${C.blueT}" stroke-width="12" stroke-opacity=".5" stroke-dasharray="10 4"/><path d="M520,410 L540,480" fill="none" stroke="${C.blueT}" stroke-width="12" stroke-opacity=".5" stroke-dasharray="10 4"/></g><path d="M520,410 L640,380 M520,410 L540,480" fill="none" stroke="${C.blue}" stroke-width=".8" stroke-dasharray="6 3"/>${label(575, 430, 'TMA', { size: 5.5, fill: C.blue, weight: 'bold' })}<rect x="586" y="424" width="8" height="7" fill="${C.blue}"/>${label(590, 429.8, 'E', { size: 5.5, fill: '#fff', weight: 'bold', halo: false })}${label(612, 430, '2000\'-6000\'', { size: 5.5, fill: C.blue, weight: 'bold' })}`);
-    // RMZ around Hawley + TMZ near TMA
-    const rmz = [[545, 296], [610, 290], [626, 350], [600, 376], [548, 370]];
-    s += feat('rmz', `<polygon points="${pts(rmz)}" fill="none" stroke="${C.blue}" stroke-width=".6"/>${scallops(rmz, 7, C.blue)}${label(590, 312, 'HAWLEY RMZ', { size: 5, fill: C.blue, weight: 'bold' })}${label(590, 319, 'SFC-3500\'', { size: 5, fill: C.blue, weight: 'bold' })}${label(590, 326, 'Hawley Radar 120.630', { size: 4, fill: C.blue })}`);
-    const tmz = [[560, 196], [640, 214], [640, 262], [590, 254]];
-    s += feat('tmz', `<polygon points="${pts(tmz)}" fill="none" stroke="${C.mag}" stroke-width=".6"/>${scallops(tmz, 7, C.mag)}${label(608, 232, 'TMZ', { size: 5.5, fill: C.mag, weight: 'bold' })}${label(608, 240, '1500\'-FL100', { size: 5, fill: C.mag, weight: 'bold' })}`);
-    // MATZ with stub around RAF Wexcombe (150,110)
-    s += feat('matz', `<path d="M193.3,135 A50,50 0 1 1 182.1,148.3 L214.1,186.6 L241.3,163.6 L193.3,135" fill="${C.blueT}" fill-opacity=".14" stroke="${C.blue}" stroke-width="2.3" stroke-dasharray="0 5" stroke-linecap="round"/><rect x="182" y="40" width="58" height="17" fill="#fff" stroke="${C.blue}" stroke-width=".7"/>${label(211, 47, 'WEXCOMBE MATZ', { size: 4.5, fill: C.blue, weight: 'bold', halo: false })}${label(211, 54, 'LARS 125.555', { size: 4.5, fill: C.blue, halo: false })}`);
-    s += feat('freq', `<rect x="182" y="40" width="58" height="17" fill="none" stroke="${C.blue}" stroke-width="1.2"/><rect x="8" y="420" width="96" height="44" fill="#fff" stroke="${C.blue}" stroke-width=".7"/>${label(56, 428, 'ATZ FREQUENCIES (sample)', { size: 4.5, fill: C.blue, weight: 'bold', halo: false })}${label(12, 437, 'OAKBURY      A/G  122.455', { size: 4.2, anchor: 'start', fill: C.blue, halo: false })}${label(12, 445, 'WEXCOMBE   APP  125.555', { size: 4.2, anchor: 'start', fill: C.blue, halo: false })}${label(12, 453, 'KESTON        TWR 118.705', { size: 4.2, anchor: 'start', fill: C.blue, halo: false })}${label(12, 461, 'All invented — not for use', { size: 3.8, anchor: 'start', fill: '#666', halo: false })}`);
-    // ATZs (not drawn for Keston: inside CTR)
-    s += feat('atz', `<circle cx="150" cy="110" r="20" fill="${C.pink}" fill-opacity=".9" stroke="${C.mag}" stroke-width="2.2" stroke-dasharray="0 4.6" stroke-linecap="round"/><circle cx="196" cy="252" r="20" fill="${C.pink}" fill-opacity=".9" stroke="${C.mag}" stroke-width="2.2" stroke-dasharray="0 4.6" stroke-linecap="round"/>`);
-    // danger / restricted / prohibited
-    s += feat('danger', `<g clip-path="url(#${p}d123)"><path d="M285,120 L345,112 L360,160 L318,186 L278,165 Z" fill="none" stroke="url(#${p}hatch)" stroke-width="10"/></g><path d="M285,120 L345,112 L360,160 L318,186 L278,165 Z" fill="none" stroke="${C.red}" stroke-width="1.4"/>${label(318, 150, 'D123/5.0', { size: 6.5, fill: C.red, weight: 'bold' })}`);
-    s += feat('danger_notam', `<circle cx="96" cy="300" r="18" fill="none" stroke="${C.red}" stroke-width="1.4" stroke-dasharray="5 3"/>${label(96, 302, 'D124/2.0', { size: 5.5, fill: C.red, weight: 'bold' })}`);
-    s += feat('restricted', `<rect x="208" y="388" width="36" height="22" fill="none" stroke="${C.red}" stroke-width="1.4"/><rect x="210" y="390" width="32" height="18" fill="none" stroke="url(#${p}hatch)" stroke-width="3" stroke-opacity=".7"/>${label(226, 402, 'R105/2.2', { size: 5, fill: C.red, weight: 'bold' })}`);
-    s += feat('prohibited', `<circle cx="526" cy="226" r="9" fill="none" stroke="${C.red}" stroke-width="1.4"/><circle cx="526" cy="226" r="7" fill="none" stroke="url(#${p}hatch)" stroke-width="3"/>${label(526, 242, 'P106/2.0', { size: 4.5, fill: C.red, weight: 'bold' })}`);
-    // aerodromes
-    s += feat('military_ad', S.military(150, 110) + label(150, 128, 'WEXCOMBE', { size: 5.5, fill: C.mag, weight: 'bold' }) + label(150, 135, '420', { size: 4.5, fill: C.mag }));
-    s += feat('civil_ad', S.civil(196, 252) + label(196, 270, 'OAKBURY', { size: 5.5, fill: C.blue, weight: 'bold' }) + label(196, 277, '250', { size: 4.5, fill: C.blue }) + S.civil(430, 324) + label(430, 297, 'KESTON', { size: 5.5, fill: C.blue, weight: 'bold' }) + label(430, 304, '257', { size: 4.5, fill: C.blue }));
-    s += feat('training', `<text x="203" y="261" ${FONT} font-size="6" font-weight="bold" fill="${C.blue}">T</text>`);
-    s += feat('customs', `<rect x="413" y="291" width="34" height="15" fill="none" stroke="${C.blue}" stroke-width=".8" stroke-dasharray="2.5 1.5"/><rect x="413" y="291" width="34" height="15" fill="none" stroke="transparent" stroke-width="5" pointer-events="stroke"/>`);
-    s += feat('civil_ltd', S.civilLtd(520, 446) + label(520, 461, 'MILL FARM', { size: 5, fill: C.blue, weight: 'bold' }) + label(520, 467, '95', { size: 4.5, fill: C.blue }));
-    s += feat('heliport', S.heli(455, 352) + label(468, 364, 'KESTON HOSPITAL', { size: 3.8, fill: C.blue, anchor: 'start' }));
-    s += feat('microlight', S.micro(330, 238) + label(330, 254, 'ASHLEA', { size: 5, fill: C.blue, weight: 'bold' }) + label(330, 260, '310', { size: 4.5, fill: C.blue }));
-    s += feat('glider', S.glider(250, 172) + label(250, 194, 'HOLM HILL', { size: 4.5, fill: C.blue, weight: 'bold' }));
-    s += feat('para', S.para(372, 444) + label(388, 447, 'FENBY DZ', { size: 4.5, fill: C.blue, anchor: 'start', weight: 'bold' }));
-    s += feat('disused', S.disused(60, 340) + label(60, 353, 'Thorne (dis)', { size: 4.2, fill: C.blue }));
-    // VRPs
-    const vrp = (x, y, n, dx) => S.vrp(x, y) + `<rect x="${x + dx}" y="${y - 10}" width="${n.length * 3.2 + 6}" height="8" fill="#fff" stroke="${C.blue}" stroke-width=".6"/>` + label(x + dx + (n.length * 3.2 + 6) / 2, y - 4, n, { size: 4.2, fill: C.blue, halo: false });
-    s += feat('vrp', vrp(358, 300, 'TOWER FARM', -40) + vrp(486, 400, 'FENBY CROSS', 4) + vrp(470, 268, 'MILL LAKE', 4));
-    // obstacles
-    s += feat('obst', S.obst(236, 316) + label(242, 312, '612', { size: 5, fill: C.blue, italic: true, anchor: 'start' }) + label(242, 319, '(350)', { size: 4.5, fill: C.blue, anchor: 'start' }) + S.obst(122, 214) + label(128, 210, '548', { size: 5, fill: C.blue, italic: true, anchor: 'start' }) + label(128, 217, '(330)', { size: 4.5, fill: C.blue, anchor: 'start' }));
-    s += feat('obst_lit', S.obstLit(500, 152) + S.obstLit(510, 156) + `<path d="M500,155 L510,159" stroke="${C.blue}" stroke-width=".7" stroke-dasharray="1.5 1"/>` + label(516, 150, '1256', { size: 5, fill: C.blue, italic: true, anchor: 'start' }) + label(516, 157, '(410)', { size: 4.5, fill: C.blue, anchor: 'start' }) + label(516, 164, 'cables', { size: 3.8, fill: C.blue, anchor: 'start' }));
-    s += feat('obst_high', S.obstHigh(618, 100) + label(611, 97, '1678', { size: 5.5, fill: C.blue, italic: true, anchor: 'end' }) + label(611, 105, '(1031)', { size: 4.5, fill: C.blue, anchor: 'end' }));
-    s += feat('turbine', S.turbine(600, 410) + S.turbine(610, 404) + S.turbine(618, 414) + S.turbine(607, 420) + label(596, 398, '738', { size: 5, fill: C.blue, italic: true, anchor: 'end' }) + label(596, 405, '(394)', { size: 4.5, fill: C.blue, anchor: 'end' }));
-    // nav aids, bird, hirta
-    s += feat('navaid', S.vor(300, 300) + `<circle cx="300" cy="300" r="16" fill="none" stroke="${C.blue}" stroke-width=".5"/>` + label(300, 324, 'KESTON KTN', { size: 4.5, fill: C.blue, weight: 'bold' }) + label(300, 330, 'VOR 113.050', { size: 4, fill: C.blue }) + S.ndb(560, 120) + label(560, 136, 'HDN NDB 382', { size: 4, fill: C.blue }));
-    s += feat('bird', S.bird(120, 432) + label(140, 436, 'BS/1.5', { size: 4.5, fill: C.blue, anchor: 'start' }));
-    s += feat('hirta', S.hirta(76, 230) + label(76, 245, 'HIRTA/1.6', { size: 4.2, fill: C.blue }));
-    // scale bar + edition panel
-    let sb = `<rect x="440" y="458" width="0" height="0"/>`; sb = `<g>`; for (let i = 0; i < 4; i++) sb += `<rect x="${440 + i * 25}" y="468" width="25" height="3" fill="${i % 2 ? '#fff' : C.ink}" stroke="${C.ink}" stroke-width=".4"/>`; sb += label(440, 466, '0', { size: 4 }) + label(490, 466, '5', { size: 4 }) + label(540, 466, '10 NM', { size: 4 }) + label(490, 478, '1:500,000 style (10 units = 1 NM)', { size: 3.6 }) + '</g>';
-    s += feat('scale', sb);
-    s += feat('edition', `<rect x="300" y="6" width="210" height="28" fill="#fff" fill-opacity=".93" stroke="${C.blue}" stroke-width=".8"/>${label(405, 15, 'SAMPLE TRAINING MAP — fictional area, NOT FOR NAVIGATION', { size: 4.6, fill: C.red, weight: 'bold', halo: false })}${label(405, 23, 'Symbols after the CAA 1:500,000 legend (2025 legend sheet)', { size: 4.2, fill: C.blue, halo: false })}${label(405, 30, 'A real chart shows its edition no. + validity date here', { size: 4.2, fill: C.blue, halo: false })}`);
-    return s;
+  /* ---------- lazy data load ---------- */
+  let loading = null;
+  function loadData() {
+    if (window.VFRCHART) return Promise.resolve(window.VFRCHART);
+    if (loading) return loading;
+    loading = new Promise((res, rej) => {
+      const s = document.createElement('script'); s.src = 'js/vfrchart-data.js'; s.async = true;
+      s.onload = () => window.VFRCHART ? res(window.VFRCHART) : rej(new Error('no data'));
+      s.onerror = () => { loading = null; rej(new Error('load failed')); };
+      document.head.appendChild(s);
+    });
+    return loading;
   }
 
   /* ---------- widget ---------- */
+  const HELP = '<strong>Tap any symbol, label or area on the chart, or any legend item.</strong> Pinch or use + / − to zoom (more names and detail appear as you zoom in), drag to move.';
   function init(host) {
     if (host.dataset.ready) return; host.dataset.ready = '1';
-    const p = 'vc' + (++uid) + '_';
     const grps = []; L.forEach(i => { if (!grps.includes(i.grp)) grps.push(i.grp); });
-    const chip = i => `<button type="button" class="vc-chip" data-k="${i.id}"><svg viewBox="0 0 40 24" width="40" height="24" aria-hidden="true">${i.mini()}</svg><span>${i.name}</span></button>`;
+    const chip = i => `<button type="button" class="vc-chip${i.none ? ' vc-none' : ''}" data-k="${i.id}"><svg viewBox="0 0 40 24" width="40" height="24" aria-hidden="true">${i.mini()}</svg><span>${i.name}</span></button>`;
     host.innerHTML = `
       <div class="vc-wrap">
         <div class="vc-tools">
@@ -229,82 +172,171 @@
           <button type="button" class="vc-btn vc-btn-wide" data-act="legend" aria-expanded="false">Legend</button>
           <span class="vc-zoom" aria-live="polite">1×</span>
         </div>
-        <div class="vc-stage"><svg class="vc-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Interactive sample 1:500,000 style VFR chart (fictional)" text-rendering="geometricPrecision">${buildMap(p)}<g class="vc-boxes"></g></svg></div>
-        <div class="vc-info" role="status" aria-live="polite"><strong>Tap any symbol on the map, or any legend item.</strong> Pinch or use + / − to zoom, drag to move.</div>
+        <div class="vc-stage"><div class="vc-load">Loading the study chart…</div></div>
+        <div class="vc-info" role="status" aria-live="polite">${HELP}</div>
         <div class="vc-legend" hidden>${grps.map(g => `<div class="vc-lg"><div class="vc-lgh">${g}</div><div class="vc-chips">${L.filter(i => i.grp === g).map(chip).join('')}</div></div>`).join('')}</div>
         <h3 class="vc-allh">All symbols explained</h3>
-        <div class="vc-all" tabindex="0">${L.map(i => `<div class="vc-item" data-k="${i.id}"><button type="button" class="vc-item-btn" data-k="${i.id}"><svg viewBox="0 0 40 24" width="48" height="29" aria-hidden="true">${i.mini()}</svg><span>${i.name}</span><em>Show on map</em></button><p>${i.what}</p><p class="vc-do"><b>What you do:</b> ${i.todo}</p></div>`).join('')}</div>
+        <p class="vc-small vc-allintro">Symbols follow the CAA 1:500,000 legend (2025 legend sheet). Differences on this study chart: it also shows woods, power lines, airway centre-lines and extra contours; terrain is one 500 ft tint with hill shading; MEFs are our own calculation; small strips come from OurAirports. Customs boxes, approach feathers, light beacons, ASR/FIS boundaries and AIAAs are not drawn. Items marked &ldquo;Not in this area&rdquo; do not occur on this part of the chart. Study rendering only &mdash; not for navigation, data may be out of date.</p>
+        <div class="vc-all" tabindex="0">${L.map(i => `<div class="vc-item" data-k="${i.id}"><button type="button" class="vc-item-btn" data-k="${i.id}"><svg viewBox="0 0 40 24" width="48" height="29" aria-hidden="true">${i.mini()}</svg><span>${i.name}</span><em>${i.none ? 'Not in this area' : 'Show on map'}</em></button><p>${i.what}</p><p class="vc-do"><b>What you do:</b> ${i.todo}</p>${i.none ? `<p class="vc-small">${i.none}</p>` : ''}</div>`).join('')}</div>
       </div>`;
-    const svg = host.querySelector('.vc-svg'), stage = host.querySelector('.vc-stage');
+    const stage = host.querySelector('.vc-stage');
     const info = host.querySelector('.vc-info'), legend = host.querySelector('.vc-legend'), all = host.querySelector('.vc-all');
-    const boxes = host.querySelector('.vc-boxes'), zl = host.querySelector('.vc-zoom');
-    let vb = { x: 0, y: 0, w: W, h: H }, anim = null;
-    const MAXZ = 8;
-    function apply() { svg.setAttribute('viewBox', `${vb.x.toFixed(2)} ${vb.y.toFixed(2)} ${vb.w.toFixed(2)} ${vb.h.toFixed(2)}`); zl.textContent = (W / vb.w).toFixed(1).replace(/\.0$/, '') + '×'; host.dataset.zoom = (W / vb.w).toFixed(2); }
-    function clamp(v) { v.w = Math.min(W, Math.max(W / MAXZ, v.w)); v.h = v.w * H / W; v.x = Math.min(W - v.w, Math.max(0, v.x)); v.y = Math.min(H - v.h, Math.max(0, v.y)); return v; }
-    function animateTo(t) { t = clamp(t); if (anim) cancelAnimationFrame(anim); const s = Object.assign({}, vb), t0 = performance.now(), D = 320; const step = n => { const k = Math.min(1, (n - t0) / D), e = 1 - Math.pow(1 - k, 3); vb = { x: s.x + (t.x - s.x) * e, y: s.y + (t.y - s.y) * e, w: s.w + (t.w - s.w) * e, h: s.h + (t.h - s.h) * e }; apply(); if (k < 1) anim = requestAnimationFrame(step); else anim = null; }; anim = requestAnimationFrame(step); }
-    function toWorld(cx, cy) { const r = svg.getBoundingClientRect(); return { x: vb.x + (cx - r.left) / r.width * vb.w, y: vb.y + (cy - r.top) / r.height * vb.h }; }
-    function zoomAt(f, wx, wy) { const nw = Math.min(W, Math.max(W / MAXZ, vb.w / f)); const k = nw / vb.w; vb = clamp({ x: wx - (wx - vb.x) * k, y: wy - (wy - vb.y) * k, w: nw, h: nw * H / W }); apply(); }
+    const zl = host.querySelector('.vc-zoom');
+    let D = null, svg = null, styleEl = null, boxes = null, WV = null;
+    let vb = null, vbc = null, anim = null, kApplied = 0, tierCls = '', commitT = null;
+    const TIERS = [1, 2, 4, 8, 16];
+    const SW = () => stage.clientWidth || 340, SH = () => stage.clientHeight || 400;
+    const kt = t => W / (D.kref * t);
+    const kOf = v => v.w / SW();
+    function fitW() { return W * 1.0; }                 // 1x = chart frame fills the width
+    function minW() { return kt(16) / 1.6 * SW(); }    // deepest zoom
+    function maxW() { return Math.max(WV[2], WV[3] * SW() / SH()); }
+    function clamp(v) {
+      v.w = Math.min(maxW(), Math.max(minW(), v.w)); v.h = v.w * SH() / SW();
+      const x0 = WV[0], y0 = WV[1], x1 = WV[0] + WV[2], y1 = WV[1] + WV[3];
+      v.x = v.w >= WV[2] ? x0 + (WV[2] - v.w) / 2 : Math.min(x1 - v.w, Math.max(x0, v.x));
+      v.y = v.h >= WV[3] ? y0 + (WV[3] - v.h) / 2 : Math.min(y1 - v.h, Math.max(y0, v.y));
+      return v;
+    }
+    function restyle(force) {
+      const k = kOf(vbc);
+      if (force || Math.abs(k / kApplied - 1) > 0.02) {
+        kApplied = k;
+        styleEl.textContent = D.css.replace('scale(K(1))', `scale(${k.toFixed(4)})`).replace(/K\(([\d.]+)\)/g, (m, v) => (v * k).toFixed(3) + 'px');
+      }
+      const c = TIERS.filter(t => t > 1 && k <= kt(t) * 1.001).map(t => 'z' + t).join(' ');
+      if (c !== tierCls) { tierCls = c; svg.setAttribute('class', 'vc-svg vcx ' + c + (svg.classList.contains('vc-dim') ? ' vc-dim' : '')); }
+    }
+    // commit: real viewBox; between commits we move the already-drawn picture with a CSS transform (smooth on phones)
+    function commit() {
+      clearTimeout(commitT); commitT = null; vbc = Object.assign({}, vb);
+      svg.style.transform = '';
+      svg.setAttribute('viewBox', `${vb.x.toFixed(2)} ${vb.y.toFixed(2)} ${vb.w.toFixed(2)} ${vb.h.toFixed(2)}`);
+      restyle(); label();
+    }
+    function label() { const z = fitW() / vb.w; zl.textContent = (z < 10 ? z.toFixed(1) : Math.round(z)).toString().replace(/\.0$/, '') + '×'; host.dataset.zoom = z.toFixed(2); }
+    function show(soon) {
+      const s = vbc.w / vb.w, sw = SW();
+      svg.style.transform = `translate(${((vbc.x - vb.x) / vb.w * sw).toFixed(2)}px,${((vbc.y - vb.y) / vb.w * sw).toFixed(2)}px) scale(${s.toFixed(5)})`;
+      label();
+      clearTimeout(commitT); commitT = setTimeout(commit, soon ? 0 : 140);
+    }
+    function animateTo(t) {
+      t = clamp(t); if (anim) cancelAnimationFrame(anim); const s = Object.assign({}, vb), t0 = performance.now(), DU = 320;
+      const step = n => { const q = Math.min(1, (n - t0) / DU), e = 1 - Math.pow(1 - q, 3); vb = { x: s.x + (t.x - s.x) * e, y: s.y + (t.y - s.y) * e, w: s.w + (t.w - s.w) * e, h: s.h + (t.h - s.h) * e }; if (q < 1) { show(); anim = requestAnimationFrame(step); } else { anim = null; commit(); } };
+      anim = requestAnimationFrame(step);
+    }
+    function toWorld(cx, cy) { const r = stage.getBoundingClientRect(); return { x: vb.x + (cx - r.left) / r.width * vb.w, y: vb.y + (cy - r.top) / r.width * vb.w }; }
+    function zoomAt(f, wx, wy) { const nw = Math.min(maxW(), Math.max(minW(), vb.w / f)); const q = nw / vb.w; vb = clamp({ x: wx - (wx - vb.x) * q, y: wy - (wy - vb.y) * q, w: nw }); show(); }
+    function home() { const w = fitW(); return clamp({ x: 0, y: WV[1], w }); }
+
     host.querySelector('.vc-tools').addEventListener('click', e => {
       const b = e.target.closest('[data-act]'); if (!b) return; const a = b.dataset.act;
-      if (a === 'in' || a === 'out') { const f = a === 'in' ? 1.6 : 1 / 1.6; const nw = vb.w / f, cx = vb.x + vb.w / 2, cy = vb.y + vb.h / 2; animateTo({ x: cx - nw / 2, y: cy - nw * H / W / 2, w: nw, h: nw * H / W }); }
-      else if (a === 'reset') { clearSel(); animateTo({ x: 0, y: 0, w: W, h: H }); }
-      else if (a === 'legend') { legend.hidden = !legend.hidden; b.setAttribute('aria-expanded', String(!legend.hidden)); b.classList.toggle('on', !legend.hidden); }
+      if (a === 'legend') { legend.hidden = !legend.hidden; b.setAttribute('aria-expanded', String(!legend.hidden)); b.classList.toggle('on', !legend.hidden); return; }
+      if (!svg) return;
+      if (a === 'in' || a === 'out') { const f = a === 'in' ? 2 : 0.5; const nw = vb.w / f, cx = vb.x + vb.w / 2, cy = vb.y + vb.h / 2; animateTo({ x: cx - nw / 2, y: cy - nw * SH() / SW() / 2, w: nw }); }
+      else if (a === 'reset') { clearSel(); animateTo(home()); }
     });
-    // pointer pan / pinch
-    const ptrs = new Map(); let start = null, moved = false, downTarget = null;
-    svg.addEventListener('pointerdown', e => {
-      svg.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      if (ptrs.size === 1) { moved = false; downTarget = e.target; }
-      start = snapshot();
-    });
-    function snapshot() { const a = [...ptrs.values()]; const r = svg.getBoundingClientRect(); if (a.length >= 2) { const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); const m = { x: (a[0].x + a[1].x) / 2, y: (a[0].y + a[1].y) / 2 }; return { vb: Object.assign({}, vb), d, m, r }; } return a.length ? { vb: Object.assign({}, vb), p: a[0], r } : null; }
-    svg.addEventListener('pointermove', e => {
-      if (!ptrs.has(e.pointerId) || !start) return; ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      const a = [...ptrs.values()], r = start.r;
-      if (a.length >= 2 && start.d) {
-        moved = true; const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y), m = { x: (a[0].x + a[1].x) / 2, y: (a[0].y + a[1].y) / 2 };
-        const f = d / start.d; const nw = Math.min(W, Math.max(W / MAXZ, start.vb.w / f)), nh = nw * H / W;
-        const wx = start.vb.x + (start.m.x - r.left) / r.width * start.vb.w, wy = start.vb.y + (start.m.y - r.top) / r.height * start.vb.h;
-        vb = clamp({ x: wx - (m.x - r.left) / r.width * nw, y: wy - (m.y - r.top) / r.height * nh, w: nw, h: nh }); apply();
-      } else if (a.length === 1 && start.p) {
-        const dx = a[0].x - start.p.x, dy = a[0].y - start.p.y; if (Math.hypot(dx, dy) > 6) moved = true;
-        if (moved) { vb = clamp({ x: start.vb.x - dx / r.width * start.vb.w, y: start.vb.y - dy / r.height * start.vb.h, w: start.vb.w, h: start.vb.h }); apply(); }
-      }
-    });
-    const end = e => {
-      if (!ptrs.has(e.pointerId)) return; ptrs.delete(e.pointerId);
-      if (ptrs.size === 0 && !moved && e.type === 'pointerup') { const f = downTarget && downTarget.closest && downTarget.closest('[data-f]'); if (f) select(f.dataset.f, { from: 'map' }); else clearSel(); }
-      start = snapshot();
-    };
-    svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', end);
-    svg.addEventListener('wheel', e => { e.preventDefault(); const w = toWorld(e.clientX, e.clientY); zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, w.x, w.y); }, { passive: false });
-    svg.addEventListener('dblclick', e => { const w = toWorld(e.clientX, e.clientY); zoomAt(2, w.x, w.y); });
 
-    function clearSel() { svg.classList.remove('vc-dim'); svg.querySelectorAll('.vc-hl').forEach(n => n.classList.remove('vc-hl')); boxes.innerHTML = ''; host.querySelectorAll('.vc-on').forEach(n => n.classList.remove('vc-on')); host.dataset.sel = ''; info.innerHTML = '<strong>Tap any symbol on the map, or any legend item.</strong> Pinch or use + / − to zoom, drag to move.'; }
+    function clearSel() {
+      if (!svg) return;
+      svg.classList.remove('vc-dim'); svg.querySelectorAll('.vc-hl').forEach(n => n.classList.remove('vc-hl')); boxes.innerHTML = '';
+      host.querySelectorAll('.vc-on').forEach(n => n.classList.remove('vc-on')); host.dataset.sel = ''; info.innerHTML = HELP;
+    }
+    const box = (b, cls) => { const p = 10 * kOf(vbc), w = Math.max(b[2], 0), h = Math.max(b[3], 0); boxes.insertAdjacentHTML('beforeend', `<rect class="vc-box${cls || ''}" x="${(b[0] - p).toFixed(1)}" y="${(b[1] - p).toFixed(1)}" width="${(w + 2 * p).toFixed(1)}" height="${(h + 2 * p).toFixed(1)}" rx="${(p / 2).toFixed(1)}"/>`); };
+    const legendOf = t => L.find(i => i.f.includes(t));
+    function tapItem(type, idx) {
+      const it = D.items[type] && D.items[type][idx]; if (!it) { clearSel(); return; }
+      clearSel(); const lg = legendOf(type);
+      host.dataset.sel = type + ':' + idx;
+      if (it.b[2] < WV[2] * 0.9) box(it.b);
+      info.innerHTML = `<div class="vc-info-h">${lg ? `<svg viewBox="0 0 40 24" width="48" height="29" aria-hidden="true">${lg.mini()}</svg>` : ''}<span>${it.h}</span></div>` + (lg ? `<p class="vc-small"><b>${lg.name}:</b> ${lg.what}</p><p class="vc-do"><b>What you do:</b> ${lg.todo}</p>` : '');
+      if (lg) host.querySelectorAll(`[data-k="${lg.id}"]`).forEach(n => n.classList.add('vc-on'));
+    }
     function select(k, o) {
       o = o || {}; const it = BY[k]; if (!it) return;
       clearSel(); host.dataset.sel = k;
-      const els = [...svg.querySelectorAll(`[data-f="${k}"]`)];
-      svg.classList.add('vc-dim'); els.forEach(n => n.classList.add('vc-hl'));
-      let bb = null;
-      els.forEach(n => { const b = n.getBBox(); boxes.insertAdjacentHTML('beforeend', `<rect class="vc-box" x="${(b.x - 3).toFixed(1)}" y="${(b.y - 3).toFixed(1)}" width="${(b.width + 6).toFixed(1)}" height="${(b.height + 6).toFixed(1)}" rx="3"/>`); bb = bb ? { x1: Math.min(bb.x1, b.x), y1: Math.min(bb.y1, b.y), x2: Math.max(bb.x2, b.x + b.width), y2: Math.max(bb.y2, b.y + b.height) } : { x1: b.x, y1: b.y, x2: b.x + b.width, y2: b.y + b.height }; });
       host.querySelectorAll(`[data-k="${k}"]`).forEach(n => n.classList.add('vc-on'));
-      info.innerHTML = `<div class="vc-info-h"><svg viewBox="0 0 40 24" width="48" height="29" aria-hidden="true">${it.mini()}</svg><strong>${it.name}</strong></div><p>${it.what}</p><p class="vc-do"><b>What you do:</b> ${it.todo}</p>`;
-      // keep the matching legend chip / list item visible without jumping the page
+      let msg = '';
+      if (svg && it.f.length) {
+        const els = it.f.flatMap(t => [...svg.querySelectorAll(`g[data-f="${t}"]`)]);
+        if (els.length) { svg.classList.add('vc-dim'); els.forEach(n => n.classList.add('vc-hl')); }
+        // pick the example nearest the middle of the current view and zoom to it
+        const cx = vb.x + vb.w / 2, cy = vb.y + vb.h / 2; let best = null, n = 0;
+        it.f.forEach(t => (D.items[t] || []).forEach((x, i) => { n++; const d = Math.hypot(x.b[0] + x.b[2] / 2 - cx, x.b[1] + x.b[3] / 2 - cy) + (x.b[2] > WV[2] * 0.9 ? 1e6 : 0); if (!best || d < best.d) best = { d, x, t, i }; }));
+        if (best && o.from !== 'map') {
+          const b = best.x.b, small = b[2] < WV[2] * 0.9;
+          if (small) {
+            // zoom in far enough that this item's detail tier is visible
+            const g = svg.querySelector(`g[data-f="${best.t}"] > [data-i="${best.i}"]`); const pg = g && g.parentNode;
+            const tm = pg && /(?:^|\s)t(\d+)/.exec(pg.getAttribute('class') || ''), tier = tm ? +tm[1] : 1;
+            let w = Math.max(b[2], b[3] * SW() / SH()) * 1.6; w = Math.max(w, minW() * 1.2); w = Math.min(w, kt(tier) * SW() * 0.95, maxW());
+            animateTo({ x: b[0] + b[2] / 2 - w / 2, y: b[1] + b[3] / 2 - w * SH() / SW() / 2, w });
+            box(b);
+          } else animateTo(home());
+          msg = n > 1 ? `<p class="vc-small">${n} on this chart — the nearest one is boxed. Everything else is dimmed; tap the chart to clear.</p>` : '';
+        }
+      }
+      info.innerHTML = `<div class="vc-info-h"><svg viewBox="0 0 40 24" width="48" height="29" aria-hidden="true">${it.mini()}</svg><strong>${it.name}</strong></div><p>${it.what}</p><p class="vc-do"><b>What you do:</b> ${it.todo}</p>${it.none ? `<p class="vc-small"><b>Not in this area:</b> ${it.none}</p>` : ''}${msg}`;
       const li = all.querySelector(`.vc-item[data-k="${k}"]`); if (li) all.scrollTop = li.offsetTop - 4;
       const ch = legend.querySelector(`.vc-chip[data-k="${k}"]`); if (ch && !legend.hidden) legend.scrollTop = ch.offsetTop - 30;
-      if (o.from !== 'map' && bb) {
-        // pan/zoom so every match is visible
-        const pad = 18; let w = Math.max(bb.x2 - bb.x1 + pad * 2, (bb.y2 - bb.y1 + pad * 2) * W / H, W / 4); w = Math.min(W, w);
-        const cx = (bb.x1 + bb.x2) / 2, cy = (bb.y1 + bb.y2) / 2; animateTo({ x: cx - w / 2, y: cy - w * H / W / 2, w, h: w * H / W });
-      }
       if (o.from === 'list' || o.from === 'legend') stage.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
     legend.addEventListener('click', e => { const b = e.target.closest('.vc-chip'); if (b) select(b.dataset.k, { from: 'legend' }); });
     all.addEventListener('click', e => { const b = e.target.closest('.vc-item-btn'); if (b) select(b.dataset.k, { from: 'list' }); });
     host.vcSelect = select; host.vcClear = clearSel;
-    apply();
+
+    function start(data) {
+      D = data; W = D.W; H = D.H; WV = D.vb;
+      stage.innerHTML = `<svg class="vc-svg vcx" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Interactive study rendering of a 1:500,000 style VFR chart of the Chilterns and Thames Valley (not for navigation)" preserveAspectRatio="xMinYMin meet"><style></style>${D.svg}<g class="vc-boxes"></g></svg>`;
+      svg = stage.querySelector('svg'); styleEl = svg.querySelector('style'); boxes = svg.querySelector('.vc-boxes');
+      vb = home(); vbc = Object.assign({}, vb); commit(); restyle(true);
+      // pointer pan / pinch
+      const ptrs = new Map(); let st = null, moved = false, downT = null;
+      const snap = () => { const a = [...ptrs.values()]; const r = stage.getBoundingClientRect(); if (a.length >= 2) return { vb: Object.assign({}, vb), d: Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y), m: { x: (a[0].x + a[1].x) / 2, y: (a[0].y + a[1].y) / 2 }, r }; return a.length ? { vb: Object.assign({}, vb), p: a[0], r } : null; };
+      stage.addEventListener('pointerdown', e => { stage.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (ptrs.size === 1) { moved = false; downT = e.target; } else moved = true; if (anim) { cancelAnimationFrame(anim); anim = null; } st = snap(); });
+      stage.addEventListener('pointermove', e => {
+        if (!ptrs.has(e.pointerId) || !st) return; ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        const a = [...ptrs.values()], r = st.r;
+        if (a.length >= 2 && st.d) {
+          const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y), m = { x: (a[0].x + a[1].x) / 2, y: (a[0].y + a[1].y) / 2 };
+          const nw = Math.min(maxW(), Math.max(minW(), st.vb.w * st.d / d));
+          const wx = st.vb.x + (st.m.x - r.left) / r.width * st.vb.w, wy = st.vb.y + (st.m.y - r.top) / r.width * st.vb.w;
+          vb = clamp({ x: wx - (m.x - r.left) / r.width * nw, y: wy - (m.y - r.top) / r.width * nw, w: nw }); show();
+        } else if (a.length === 1 && st.p) {
+          const dx = a[0].x - st.p.x, dy = a[0].y - st.p.y; if (Math.hypot(dx, dy) > 6) moved = true;
+          if (moved) { vb = clamp({ x: st.vb.x - dx / r.width * st.vb.w, y: st.vb.y - dy / r.width * st.vb.w, w: st.vb.w }); show(); }
+        }
+      });
+      const end = e => {
+        if (!ptrs.has(e.pointerId)) return; ptrs.delete(e.pointerId);
+        if (ptrs.size === 0) {
+          if (!moved && e.type === 'pointerup') {
+            const h = hitAt(e.clientX, e.clientY);
+            if (h) tapItem(h.f, h.i); else clearSel();
+          }
+          if (moved) show(true);
+        }
+        st = snap();
+      };
+      // Tap hit-test: prefer a symbol or label within ~16px of the finger over the area underneath.
+      const hitList = (x, y) => document.elementsFromPoint(x, y).filter(n => svg.contains(n)).map(n => n.closest('[data-i]')).filter(n => n && !n.closest('.vc-boxes') && n.closest('[data-f]'));
+      const asHit = n => ({ f: n.closest('[data-f]').dataset.f, i: +n.dataset.i });
+      function hitAt(x, y) {
+        const c = hitList(x, y); if (c.length && c[0].tagName === 'g') return asHit(c[0]);
+        for (const R of [7, 14]) for (let a = 0; a < 8; a++) { const q = hitList(x + R * Math.cos(a * Math.PI / 4), y + R * Math.sin(a * Math.PI / 4)).find(n => n.tagName === 'g'); if (q) return asHit(q); }
+        return c.length ? asHit(c[0]) : null;
+      }
+      stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
+      stage.addEventListener('wheel', e => { e.preventDefault(); const w = toWorld(e.clientX, e.clientY); zoomAt(e.deltaY < 0 ? 1.2 : 1 / 1.2, w.x, w.y); }, { passive: false });
+      stage.addEventListener('dblclick', e => { const w = toWorld(e.clientX, e.clientY); vb = clamp(Object.assign({}, vb)); animateTo((() => { const nw = vb.w / 2; return { x: w.x - (w.x - vb.x) / 2, y: w.y - (w.y - vb.y) / 2, w: nw }; })()); });
+      let rw = SW(); new ResizeObserver(() => { if (Math.abs(SW() - rw) > 1) { rw = SW(); vb = clamp(Object.assign({}, vb)); commit(); restyle(true); } }).observe(stage);
+      host.vcView = (cx, cy, z) => { const w = fitW() / z; vb = clamp({ x: cx - w / 2, y: cy - w * SH() / SW() / 2, w }); commit(); return { k: kOf(vb), tiers: tierCls }; };
+      host.dataset.loaded = '1';
+    }
+    // load when the widget is near the screen (the data file is large)
+    const go = () => loadData().then(start).catch(() => { stage.innerHTML = '<div class="vc-load">The chart could not be loaded. Check your connection and reopen this topic.</div>'; host.dataset.ready = ''; });
+    if ('IntersectionObserver' in window) { const io = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) { io.disconnect(); go(); } }, { rootMargin: '600px' }); io.observe(stage); } else go();
   }
 
   function scan(root) { (root || document).querySelectorAll('[data-widget="vfrchart"]').forEach(init); }
