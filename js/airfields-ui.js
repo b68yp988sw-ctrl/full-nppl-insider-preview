@@ -540,7 +540,7 @@ const AirfieldsUI = (() => {
   const AF_MEDIA = {
     EGTB: {
       photo: {
-        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Wycombe_Air_Park%2C_Booker_-_geograph.org.uk_-_119861.jpg/800px-Wycombe_Air_Park%2C_Booker_-_geograph.org.uk_-_119861.jpg",
+        src: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Wycombe_Air_Park%2C_Booker_-_geograph.org.uk_-_119861.jpg",
         page: "https://commons.wikimedia.org/wiki/File:Wycombe_Air_Park%2C_Booker_-_geograph.org.uk_-_119861.jpg",
         credit: "David Ellis",
         licence: "CC BY-SA 2.0",
@@ -551,7 +551,7 @@ const AirfieldsUI = (() => {
     },
     EGLD: {
       photo: {
-        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Denham_Aerodrome_-_geograph.org.uk_-_3562420.jpg/800px-Denham_Aerodrome_-_geograph.org.uk_-_3562420.jpg",
+        src: "https://upload.wikimedia.org/wikipedia/commons/1/12/Denham_Aerodrome_-_geograph.org.uk_-_3562420.jpg",
         page: "https://commons.wikimedia.org/wiki/File:Denham_Aerodrome_-_geograph.org.uk_-_3562420.jpg",
         credit: "Robin Webster",
         licence: "CC BY-SA 2.0",
@@ -562,7 +562,7 @@ const AirfieldsUI = (() => {
     },
     EGTR: {
       photo: {
-        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Elstree_aerodrome_-_geograph.org.uk_-_2236188.jpg/800px-Elstree_aerodrome_-_geograph.org.uk_-_2236188.jpg",
+        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Elstree_aerodrome_-_geograph.org.uk_-_2236188.jpg/960px-Elstree_aerodrome_-_geograph.org.uk_-_2236188.jpg",
         page: "https://commons.wikimedia.org/wiki/File:Elstree_aerodrome_-_geograph.org.uk_-_2236188.jpg",
         credit: "David Howard",
         licence: "CC BY-SA 2.0",
@@ -573,7 +573,7 @@ const AirfieldsUI = (() => {
     },
     EGLM: {
       photo: {
-        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/White_Waltham_aerodrome%2C_aerial_-_geograph.org.uk_-_3515987.jpg/800px-White_Waltham_aerodrome%2C_aerial_-_geograph.org.uk_-_3515987.jpg",
+        src: "https://upload.wikimedia.org/wikipedia/commons/1/1a/White_Waltham_aerodrome%2C_aerial_-_geograph.org.uk_-_3515987.jpg",
         page: "https://commons.wikimedia.org/wiki/File:White_Waltham_aerodrome%2C_aerial_-_geograph.org.uk_-_3515987.jpg",
         credit: "Chris",
         licence: "CC BY-SA 2.0",
@@ -584,7 +584,7 @@ const AirfieldsUI = (() => {
     },
     EGTK: {
       photo: {
-        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/London_Oxford_Airport_-_geograph.org.uk_-_3345911.jpg/800px-London_Oxford_Airport_-_geograph.org.uk_-_3345911.jpg",
+        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/London_Oxford_Airport_-_geograph.org.uk_-_3345911.jpg/960px-London_Oxford_Airport_-_geograph.org.uk_-_3345911.jpg",
         page: "https://commons.wikimedia.org/wiki/File:London_Oxford_Airport_-_geograph.org.uk_-_3345911.jpg",
         credit: "Des Blenkinsopp",
         licence: "CC BY-SA 2.0",
@@ -595,7 +595,7 @@ const AirfieldsUI = (() => {
     },
     EGTF: {
       photo: {
-        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Fairoaks_Airport_-_geograph.org.uk_-_8357436.jpg/800px-Fairoaks_Airport_-_geograph.org.uk_-_8357436.jpg",
+        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Fairoaks_Airport_-_geograph.org.uk_-_8357436.jpg/960px-Fairoaks_Airport_-_geograph.org.uk_-_8357436.jpg",
         page: "https://commons.wikimedia.org/wiki/File:Fairoaks_Airport_-_geograph.org.uk_-_8357436.jpg",
         credit: "Jonathan Billinger",
         licence: "CC BY-SA 2.0",
@@ -606,7 +606,7 @@ const AirfieldsUI = (() => {
     },
     EGTC: {
       photo: {
-        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Cranfield_Airport_by_Thomas_Nugent.jpg/800px-Cranfield_Airport_by_Thomas_Nugent.jpg",
+        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Cranfield_Airport_by_Thomas_Nugent.jpg/960px-Cranfield_Airport_by_Thomas_Nugent.jpg",
         page: "https://commons.wikimedia.org/wiki/File:Cranfield_Airport_by_Thomas_Nugent.jpg",
         credit: "Thomas Nugent",
         licence: "CC BY-SA 2.0",
@@ -617,7 +617,7 @@ const AirfieldsUI = (() => {
     },
     EGGW: {
       photo: {
-        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Touchdown_-_London_Luton_Airport_-_geograph.org.uk_-_4203742.jpg/800px-Touchdown_-_London_Luton_Airport_-_geograph.org.uk_-_4203742.jpg",
+        src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Touchdown_-_London_Luton_Airport_-_geograph.org.uk_-_4203742.jpg/960px-Touchdown_-_London_Luton_Airport_-_geograph.org.uk_-_4203742.jpg",
         page: "https://commons.wikimedia.org/wiki/File:Touchdown_-_London_Luton_Airport_-_geograph.org.uk_-_4203742.jpg",
         credit: "Richard Humphrey",
         licence: "CC BY-SA 2.0",
@@ -642,7 +642,7 @@ const AirfieldsUI = (() => {
     let photoHtml;
     if (ph && ph.src) {
       photoHtml = `<figure class="af-photo">
-        <img src="${esc(ph.src)}" alt="${esc(ph.caption || d.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-no-sw-cache="1" />
+        <img src="${esc(ph.src)}" alt="${esc(ph.caption || d.name)}" loading="lazy" decoding="async" data-no-sw-cache="1" />
         <figcaption class="af-photo-cap">
           <span>${esc(ph.caption || d.name)}</span>
           <span class="af-photo-credit">Photo: <a href="${esc(ph.page)}" target="_blank" rel="noopener">${esc(ph.credit)}</a>
