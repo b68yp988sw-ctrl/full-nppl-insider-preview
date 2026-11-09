@@ -3,7 +3,7 @@
 /* PREVIEW build: own cache prefix so it never deletes or reuses the live site's caches
    (live and preview share the same github.io origin). */
 const CACHE_PREFIX = 'nppl-preview-';
-const CACHE_VERSION = CACHE_PREFIX + 'v18-20261109-sync';
+const CACHE_VERSION = CACHE_PREFIX + 'v19-20261109-batch1';
 const SHELL = [
   './',
   './index.html',
@@ -65,6 +65,7 @@ const SHELL = [
   './data/signs-signals.js',
   './data/law-currency.js',
   './data/met-daily.js',
+  './js/app-clock.js',
   './js/pwa.js',
   './data/crp-drills.js',
   './data/frtol-drills.js',
