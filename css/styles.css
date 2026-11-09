@@ -2145,9 +2145,8 @@ button, input, select, textarea { font-family: inherit; }
 }
 @media (max-width: 390px) {
   .app-clock { padding: 3px 10px 4px; }
-  .app-clock-uk { font-size: 0.68rem; }
-  .app-clock-utc { font-size: 0.58rem; }
-  .preview-badge { display: none; } /* keep clock clear of search/audio on narrow phones */
+  .app-clock-uk { font-size: 0.66rem; }
+  .app-clock-utc { font-size: 0.56rem; }
 }
 body[data-route] .main { padding-top: 8px; }
 
