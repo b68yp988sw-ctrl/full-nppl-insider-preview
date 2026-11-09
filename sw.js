@@ -3,13 +3,12 @@
 /* PREVIEW build: own cache prefix so it never deletes or reuses the live site's caches
    (live and preview share the same github.io origin). */
 const CACHE_PREFIX = 'nppl-preview-';
-const CACHE_VERSION = CACHE_PREFIX + 'v17-20261031-c42-overlap-fix';
+const CACHE_VERSION = CACHE_PREFIX + 'v18-20261109-sync';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './css/styles.css',
-  './css/lesson-content.css',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
   './assets/icons/apple-touch-icon.png',
@@ -23,18 +22,8 @@ const SHELL = [
   './assets/img/c42/ext-elec.svg',
   './assets/img/c42/ext-prop.svg',
   './assets/img/c42/ext-fuel.svg',
-  './assets/img/c42/ext-oil.svg',
-  './assets/img/c42/ext-nose.svg',
-  './assets/img/c42/ext-doors.svg',
-  './assets/img/c42/ext-wings.svg',
-  './assets/img/c42/ext-ail.svg',
-  './assets/img/c42/ext-bag.svg',
-  './assets/img/c42/ext-fuse.svg',
-  './assets/img/c42/ext-hs.svg',
-  './assets/img/c42/ext-elev.svg',
   './assets/img/c42/dep-power.svg',
   './assets/video/circuit-poster.jpg',
-  './assets/video/c42-circuit-poster.jpg',
   './data/lessons.js',
   './data/flashcards.js',
   './data/questions.js',
@@ -65,10 +54,10 @@ const SHELL = [
   './js/aircraft-ui.js',
   './js/chart-ui.js',
   './js/flight-prep-ui.js',
-  './js/lesson-widgets.js',
-  './js/vfrchart-data.js',
-  './img/chart-relief.jpg',
   './js/app.js',
+  './js/airfield-hours.js',
+  './js/glossary.js',
+  './js/airfield-weather.js',
   './js/airfields-ui.js',
   './js/crp-drills-ui.js',
   './js/frtol-drills-ui.js',
@@ -79,18 +68,48 @@ const SHELL = [
   './js/pwa.js',
   './data/crp-drills.js',
   './data/frtol-drills.js',
-  './data/airfields.js'
+  './data/airfields.js',
+  './data/airfields-detail.js',
+  './data/airfields-geo.js',
+  './css/lesson-content.css',
+  './assets/img/c42/ext-oil.svg',
+  './assets/img/c42/ext-nose.svg',
+  './assets/img/c42/ext-doors.svg',
+  './assets/img/c42/ext-wings.svg',
+  './assets/img/c42/ext-ail.svg',
+  './assets/img/c42/ext-bag.svg',
+  './assets/img/c42/ext-fuse.svg',
+  './assets/img/c42/ext-hs.svg',
+  './assets/img/c42/ext-elev.svg',
+  './assets/video/c42-circuit-poster.jpg',
+  './js/lesson-widgets.js',
+  './js/vfrchart-data.js',
+  './img/chart-relief.jpg'
 ];
 
 const LANG_FILES = ['cy', 'pl', 'fr', 'de', 'es', 'pt', 'ro'].map(
   (l) => `./data/i18n-content/${l}.js`
 );
 
+function fresh(urls) {
+  return urls.map((u) => new Request(u, { cache: 'reload' }));
+}
+
+/* Background refresh of a cached file: revalidate with the server instead of
+   trusting the HTTP cache (navigation requests can't be cloned with options). */
+function revalidate(req) {
+  return req.mode === 'navigate'
+    ? new Request(req.url, { cache: 'no-cache', credentials: 'same-origin' })
+    : new Request(req, { cache: 'no-cache' });
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_VERSION).then((cache) =>
-      cache.addAll([...SHELL, ...LANG_FILES]).catch(() =>
-        cache.addAll(SHELL)
+      /* cache:'reload' bypasses the browser HTTP cache, so a new version never
+         stores stale copies of the previous version's files. */
+      cache.addAll(fresh([...SHELL, ...LANG_FILES])).catch(() =>
+        cache.addAll(fresh(SHELL))
       )
     ).then(() => self.skipWaiting())
   );
@@ -153,7 +172,7 @@ self.addEventListener('fetch', (event) => {
   if (isStatic(url)) {
     event.respondWith(
       caches.open(CACHE_VERSION).then((c) => c.match(req)).then((cached) => {
-        const net = fetch(req)
+        const net = fetch(revalidate(req))
           .then((res) => {
             if (res && res.ok) {
               const copy = res.clone();
