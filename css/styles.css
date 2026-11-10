@@ -16,6 +16,7 @@
   --border: rgba(96,165,250, 0.18);
   --radius: 14px;
   --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
   --nav-h: 64px;
   --top-h: 56px;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -83,9 +84,9 @@ body { overflow-x: hidden; }
 /* Top bar */
 .topbar {
   position: sticky; top: 0; z-index: 40;
-  height: var(--top-h);
+  height: calc(var(--top-h) + var(--safe-t));
   display: flex; align-items: center; gap: 8px;
-  padding: 0 12px;
+  padding: var(--safe-t) 12px 0;
   background: #06060c;
   border-bottom: 1px solid var(--border);
 }
@@ -277,7 +278,7 @@ body { overflow-x: hidden; }
   display: grid; place-items: center; margin: 0 auto 10px; font-size: 1.2rem;
 }
 .speak-bar {
-  position: sticky; top: var(--top-h); z-index: 30;
+  position: sticky; top: calc(var(--top-h) + var(--safe-t)); z-index: 30;
   display: flex; gap: 8px; padding: 8px 0 12px;
   background: linear-gradient(180deg, var(--navy) 70%, transparent);
 }
@@ -607,7 +608,7 @@ body { overflow-x: hidden; }
 .gloss-intro { color: var(--muted); font-size: 0.85rem; margin-bottom: 12px; }
 .sticky-tools {
   position: sticky;
-  top: var(--top-h);
+  top: calc(var(--top-h) + var(--safe-t));
   z-index: 25;
   background: rgba(6,6,12, 0.94);
   backdrop-filter: blur(10px);
@@ -636,7 +637,7 @@ body { overflow-x: hidden; }
 .gloss-count { color: var(--muted); font-size: 0.8rem; margin: 4px 0 10px; }
 .gloss-letter {
   position: sticky;
-  top: calc(var(--top-h) + 96px);
+  top: calc(var(--top-h) + var(--safe-t) + 96px);
   z-index: 20;
   background: var(--navy-2);
   color: var(--sky);
@@ -859,7 +860,7 @@ body { overflow-x: hidden; }
   height: 36px;
   font-size: 1rem;
 }
-.chart-cat-head { top: calc(var(--top-h) + 108px); }
+.chart-cat-head { top: calc(var(--top-h) + var(--safe-t) + 108px); }
 .chart-quiz-prog { margin-bottom: 10px; color: var(--muted); font-size: 0.85rem; }
 .chart-quiz-q h3 { color: var(--text); font-size: 1.05rem; }
 .chart-opt-ok {
@@ -1584,8 +1585,8 @@ svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-widt
 
 /* Header */
 .topbar {
-  height: var(--top-h); padding: 0 16px; gap: 10px;
-  background: rgba(5,5,11,.92); border-bottom: 1px solid #1c1c2e;
+  height: calc(var(--top-h) + var(--safe-t)); padding: var(--safe-t) 16px 0; gap: 10px;
+  background: #05050b; border-bottom: 1px solid #1c1c2e;
 }
 .brand-logo { display: none; width: 40px; height: 40px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border-hi); flex: none; }
 body[data-route="home"] .brand-logo { display: block; }
@@ -2127,7 +2128,7 @@ button, input, select, textarea { font-family: inherit; }
 
 /* ---- Batch1: live clock, section cards, jump bar, PPR, media ---- */
 .app-clock {
-  position: sticky; top: var(--top-h); z-index: 35;
+  position: sticky; top: calc(var(--top-h) + var(--safe-t)); z-index: 35;
   display: flex; flex-direction: column; align-items: flex-end; justify-content: center;
   gap: 2px; padding: 5px 12px 6px;
   background: #05050b; border-bottom: 1px solid #1c1c2e;
@@ -2152,7 +2153,7 @@ button, input, select, textarea { font-family: inherit; }
 body[data-route] .main { padding-top: 8px; }
 
 .af-jump {
-  position: sticky; top: calc(var(--top-h) + 40px); z-index: 34;
+  position: sticky; top: calc(var(--top-h) + var(--safe-t) + 40px); z-index: 34;
   display: flex; gap: 6px; overflow-x: auto; overflow-y: hidden;
   margin: 0 -16px 14px; padding: 8px 16px;
   background: rgba(5,5,11,.92); border-bottom: 1px solid rgba(201,206,216,0.12);

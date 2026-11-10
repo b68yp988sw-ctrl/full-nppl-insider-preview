@@ -3,7 +3,7 @@
 /* PREVIEW build: own cache prefix so it never deletes or reuses the live site's caches
    (live and preview share the same github.io origin). */
 const CACHE_PREFIX = 'nppl-preview-';
-const CACHE_VERSION = CACHE_PREFIX + 'v24-20261109-sharpsplash';
+const CACHE_VERSION = CACHE_PREFIX + 'v25-20261110-notchback';
 const SHELL = [
   './',
   './index.html',
